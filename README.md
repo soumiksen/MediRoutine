@@ -77,7 +77,6 @@ Medical prescriptions and treatment plans are often complex and jargon-filled. R
 
 ---
 
-
 ## 🧑‍💻 Local Development Setup
 
 1. **Clone the repository**
@@ -112,11 +111,11 @@ Medical prescriptions and treatment plans are often complex and jargon-filled. R
 ## 🧑‍⚕️ Contributors
 
 | Role | Name | GitHub Profile |
-|------|------|------|
-| **Member 1** | Tanzid Noor Azad | @tanzidazad |
-| **Member 2** | Soumik Sen | @soumiksen |
-| **Member 3** | Mohammad Ishmama Hossain | @mishmamh |
-| **Member 4** | Zimraan Ibne Hasan | @zimraanhasan11 |
+|------|------|----------------|
+| **Member 1** | Tanzid Noor Azad | [@tanzidazad](https://github.com/tanzidazad) |
+| **Member 2** | Soumik Sen | [@soumiksen](https://github.com/soumiksen) |
+| **Member 3** | Mohammad Ishmama Hossain | [@mishmamh](https://github.com/mishmamh) |
+| **Member 4** | Zimraan Ibne Hasan | [@zimraanhasan11](https://github.com/zimraanhasan11) |
 
 ---
 
