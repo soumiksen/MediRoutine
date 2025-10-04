@@ -1,37 +1,36 @@
-# MediRoutine
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-**Executive Summary**
-Problem: Medical instructions provided by doctors, especially for patients with chronic conditions or complex treatment plans, can be confusing, jargon-filled, and difficult to follow. This leads to poor adherence, medical errors, and increased stress for patients and their caregivers.
+## Getting Started
 
-Solution: MediRoutine AI is a web-based application designed to solve this problem. Users will input their doctor's instructions (e.g., by typing or copy-pasting text), and the application will use Artificial Intelligence to parse, simplify, and organize this information into a clear, actionable daily schedule. The schedule will explicitly state what to do (medication, exercise), what to eat (dietary guidelines), and when to do it, complete with reminders.
-Vision: To empower patients to take control of their health by transforming complex medical advice into a simple, manageable daily routine, thereby improving treatment adherence and health outcomes.
+First, run the development server:
 
-**CORE FUNCTIONS:**
-Instruction Parsing (Medical Text Understanding)
-Using Gemini API
-Simplification and Translation Engine
-Using Gemini API
-Routine Generator
-Using Google Calendar API
-Reminder & Action Breakdown Engine
-Use external notification service
-Use Firebase notifications for mails
-Output Formatting & Explanation
-Use Gemini API
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-**TECH STACK**
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Nextjs (primary frontend)
+You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-Framer Motion (for animations)
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Auth0 (for user authentication)
+## Learn More
 
-Firebase (Realtime storage)
-Gemini API (AI)
+To learn more about Next.js, take a look at the following resources:
 
-Google Calendar API (For routines and realtime sync)
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Google Fit API and other similar platforms (For statistics
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Canva for design & Figma
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
