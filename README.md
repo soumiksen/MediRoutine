@@ -77,46 +77,6 @@ Medical prescriptions and treatment plans are often complex and jargon-filled. R
 
 ---
 
-## 🧩 Icon Set
-
-| Section | Icons |
-|----------|-------|
-| **Main Pages** | 🏠 Home • 📋 My Routines • ➕ New Routine • 👤 Profile • ⚙️ Settings • 🚪 Logout |
-| **Routine Actions** | 💊 Medication • 🥗 Meals/Diet • 🏃 Exercise • 🕒 Reminder • ✏️ Edit • 🗑️ Delete • ✅ Done |
-| **AI & Tools** | 🤖 AI Generate • 📷 Upload Image (OCR) • 📤 Export PDF • 🔄 Refresh |
-| **Extras** | 👥 Caregiver Mode • 📈 Progress Tracking • 🔔 Notifications • ❓ Help |
-
----
-
-## 🔒 Why Auth0 Instead of Firebase Auth?
-
-While Firebase Auth is lightweight, **Auth0** provides:
-- Enterprise-level security (OAuth2, OpenID Connect)
-- Role-based access (Patient vs Caregiver)
-- Seamless third-party logins (Google, Apple, Microsoft)
-- HIPAA-ready architecture for future compliance
-
----
-
-## 📈 Scalability
-
-RemedyRX is built for scalability:
-- **Next.js SSR** for performance and SEO.  
-- **Firebase Realtime Database** for fast sync.  
-- **Serverless architecture** for dynamic scaling.  
-- Modular design allows independent scaling of AI, Calendar, and User modules.
-
----
-
-## 🌱 Future Improvements
-
-- 🩹 Integration with **wearable devices** (Fitbit, Apple HealthKit)  
-- 🧠 Personalized **AI-driven health insights**  
-- 🗣️ **Voice input** for accessibility  
-- 👨‍⚕️ **Doctor dashboard** for remote monitoring  
-- 📊 Predictive analytics for **treatment adherence**  
-
----
 
 ## 🧑‍💻 Local Development Setup
 
@@ -153,10 +113,10 @@ RemedyRX is built for scalability:
 
 | Role | Name |
 |------|------|
-| **Project Lead** | [Your Name] |
-| **AI & Backend Developer** | [Contributor Name] |
-| **Frontend & UI/UX Designer** | [Contributor Name] |
-| **Branding & Visuals** | [Contributor Name] |
+| **Member 1** | [Tanzid Noor Azad] | [@TanzidAzad]
+| **Member 2** | [Soumik Sen] | [@soumiksen]
+| **Member 3** | [Mohammad Ishmama Hossain] | [@mishmamh]
+| **Member 4** | [Zimraan Ibne Hasan] | [@zimraanhasan11]
 
 ---
 
