@@ -111,12 +111,12 @@ Medical prescriptions and treatment plans are often complex and jargon-filled. R
 
 ## 🧑‍⚕️ Contributors
 
-| Role | Name |
-|------|------|
-| **Member 1** | [Tanzid Noor Azad] | [@TanzidAzad]
-| **Member 2** | [Soumik Sen] | [@soumiksen]
-| **Member 3** | [Mohammad Ishmama Hossain] | [@mishmamh]
-| **Member 4** | [Zimraan Ibne Hasan] | [@zimraanhasan11]
+| Role | Name | GitHub Profile |
+|------|------|------|
+| **Member 1** | [Tanzid Noor Azad] | [@TanzidAzad] |
+| **Member 2** | [Soumik Sen] | [@soumiksen] |
+| **Member 3** | [Mohammad Ishmama Hossain] | [@mishmamh] |
+| **Member 4** | [Zimraan Ibne Hasan] | [@zimraanhasan11] |
 
 ---
 
