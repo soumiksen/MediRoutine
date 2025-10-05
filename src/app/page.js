@@ -15,11 +15,8 @@ export default function Home() {
             Your doctor's instructions, transformed into a simple daily schedule
             you can actually follow.
           </p>
-          <Button>
-            Try RemedyRX Now!
-          </Button>
-          <p className='mt-4 text-lg'>
-          </p>
+          <Button>Try RemedyRX Now!</Button>
+          <p className='mt-4 text-lg'></p>
         </div>
       </section>
 
@@ -39,9 +36,7 @@ export default function Home() {
           <div className='grid md:grid-cols-3 gap-8'>
             <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg border-2 border-remedy-alert'>
               <div className='text-5xl mb-4'>📋</div>
-              <h3 className='text-2xl font-bold mb-3'>
-                Too Many Instructions
-              </h3>
+              <h3 className='text-2xl font-bold mb-3'>Too Many Instructions</h3>
               <p className='text-lg'>
                 Multiple medications, different times, various foods to
                 avoid—it's hard to keep track.
@@ -61,9 +56,7 @@ export default function Home() {
 
             <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg border-2 border-remedy-alert'>
               <div className='text-5xl mb-4'>⏰</div>
-              <h3 className='text-2xl font-bold mb-3'>
-                Easy to Forget
-              </h3>
+              <h3 className='text-2xl font-bold mb-3'>Easy to Forget</h3>
               <p className='text-lg'>
                 Life gets busy. Without reminders, it's easy to miss doses or do
                 things in the wrong order.
@@ -89,14 +82,10 @@ export default function Home() {
           <div className='grid md:grid-cols-2 gap-12 items-center mb-16'>
             <div className='bg-remedy-teal text-remedy-primary p-12 rounded-3xl shadow-2xl text-center'>
               <div className='text-8xl mb-4'>📝</div>
-              <p className='text-2xl font-semibold'>
-                Step 1: Copy & Paste
-              </p>
+              <p className='text-2xl font-semibold'>Step 1: Copy & Paste</p>
             </div>
             <div>
-              <h3 className='text-3xl font-bold mb-4'>
-                Simply Type or Paste
-              </h3>
+              <h3 className='text-3xl font-bold mb-4'>Simply Type or Paste</h3>
               <p className='text-xl leading-relaxed'>
                 Just copy your doctor's instructions from your prescription
                 bottle, discharge papers, or appointment notes and paste them
@@ -107,9 +96,7 @@ export default function Home() {
 
           <div className='grid md:grid-cols-2 gap-12 items-center mb-16'>
             <div className='order-2 md:order-1'>
-              <h3 className='text-3xl font-bold mb-4'>
-                AI Does the Hard Work
-              </h3>
+              <h3 className='text-3xl font-bold mb-4'>AI Does the Hard Work</h3>
               <p className='text-xl leading-relaxed'>
                 Our smart technology reads your instructions and figures out
                 exactly what you need to do, when you need to do it, and how. No
@@ -118,18 +105,14 @@ export default function Home() {
             </div>
             <div className='bg-remedy-aqua text-remedy-primary p-12 rounded-3xl shadow-2xl text-center order-1 md:order-2'>
               <div className='text-8xl mb-4'>🤖</div>
-              <p className='text-2xl font-semibold'>
-                Step 2: AI Organizes
-              </p>
+              <p className='text-2xl font-semibold'>Step 2: AI Organizes</p>
             </div>
           </div>
 
           <div className='grid md:grid-cols-2 gap-12 items-center'>
             <div className='bg-remedy-success text-remedy-primary p-12 rounded-3xl shadow-2xl text-center'>
               <div className='text-8xl mb-4'>✅</div>
-              <p className='text-2xl font-semibold'>
-                Step 3: Follow Your Plan
-              </p>
+              <p className='text-2xl font-semibold'>Step 3: Follow Your Plan</p>
             </div>
             <div>
               <h3 className='text-3xl font-bold mb-4'>
@@ -157,9 +140,7 @@ export default function Home() {
               <div className='w-20 h-20 bg-remedy-success rounded-full mx-auto mb-4 flex items-center justify-center text-4xl'>
                 👓
               </div>
-              <h3 className='text-xl font-bold mb-2'>
-                Large, Clear Text
-              </h3>
+              <h3 className='text-xl font-bold mb-2'>Large, Clear Text</h3>
               <p>Easy to read, even without glasses</p>
             </div>
 
@@ -167,9 +148,7 @@ export default function Home() {
               <div className='w-20 h-20 bg-remedy-aqua rounded-full mx-auto mb-4 flex items-center justify-center text-4xl'>
                 🔔
               </div>
-              <h3 className='text-xl font-bold mb-2'>
-                Gentle Reminders
-              </h3>
+              <h3 className='text-xl font-bold mb-2'>Gentle Reminders</h3>
               <p>Never miss a dose again</p>
             </div>
 
@@ -177,9 +156,7 @@ export default function Home() {
               <div className='w-20 h-20 bg-remedy-teal rounded-full mx-auto mb-4 flex items-center justify-center text-4xl'>
                 📱
               </div>
-              <h3 className='text-xl font-bold mb-2'>
-                Simple to Use
-              </h3>
+              <h3 className='text-xl font-bold mb-2'>Simple to Use</h3>
               <p>No tech skills needed</p>
             </div>
 
@@ -187,9 +164,7 @@ export default function Home() {
               <div className='w-20 h-20 bg-remedy-success rounded-full mx-auto mb-4 flex items-center justify-center text-4xl'>
                 👨‍👩‍👧
               </div>
-              <h3 className='text-xl font-bold mb-2'>
-                Family Sharing
-              </h3>
+              <h3 className='text-xl font-bold mb-2'>Family Sharing</h3>
               <p>Your loved ones can help monitor</p>
             </div>
           </div>
@@ -205,9 +180,7 @@ export default function Home() {
           <p className='text-2xl text-remedy-primary mb-4'>
             Join thousands who've simplified their medication routine
           </p>
-          <Button>
-            Get Started Now - Free Forever!
-          </Button>
+          <Button>Get Started Now - Free Forever!</Button>
           <p className='text-remedy-primary text-lg mt-4'>
             ✓ 100% Free ✓ No signup required ✓ Works instantly
           </p>
