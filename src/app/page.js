@@ -171,7 +171,7 @@ export default function Home() {
           </p>
           <Button>Get Started Now - Free Forever!</Button>
           <p className='text-remedy-primary text-lg mt-4'>
-            ✓ 100% Free ✓ No signup required ✓ Works instantly
+            ✓ 100% Free ✓ Easy to Sign Up ✓ Works instantly
           </p>
         </div>
       </section>
