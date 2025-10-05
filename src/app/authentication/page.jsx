@@ -32,9 +32,8 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'var(--color-remedy-primary)' }}>
-      <div className="w-full max-w-md">
-        {/* Logo/Header */}
+    <div className="min-h-screen flex p-4 justify-center" style={{ backgroundColor: 'var(--color-remedy-primary)' }}>
+      <div className="w-full max-w-md" style={{ marginTop: '10vh' }}>
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2" style={{ color: '#3AAFA9' }}>
             RemedyRX
@@ -44,7 +43,6 @@ const AuthPage = () => {
           </p>
         </div>
 
-        {/* Auth Card */}
         <div className="rounded-2xl p-8" style={{ 
           backgroundColor: 'var(--color-remedy-primary)',
           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)'
