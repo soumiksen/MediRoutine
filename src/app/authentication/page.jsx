@@ -1,16 +1,19 @@
 'use client';
 
+import { useAuth } from '@/context/auth';
 import { signIn, signUp } from '@/lib/authService.js';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { db } from '@/lib/firebase.js';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { redirect, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import Input from '../../components/Input.jsx';
 import Button from '../../components/largebutton.jsx';
 
 const AuthPage = () => {
-  const { user, isProvider, isPatient, loading } = require('@/context/auth').useAuth();
+  const { user, isProvider, isPatient, loading } = useAuth();
   if (!loading && user) {
-    if (isProvider) return require('next/navigation').redirect('/providerdashboard');
-    if (isPatient) return require('next/navigation').redirect('/dashboard');
+    if (isProvider) return redirect('/providerdashboard');
+    if (isPatient) return redirect('/dashboard');
   }
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
@@ -19,26 +22,139 @@ const AuthPage = () => {
     password: '',
     confirmPassword: '',
     role: 'patient',
+    caregiverEmail: '',
   });
+  const [caregiverVerifying, setCaregiverVerifying] = useState(false);
+  const [caregiverValid, setCaregiverValid] = useState(null);
+  const [caregiverName, setCaregiverName] = useState('');
+  const [errors, setErrors] = useState([]);
+  const [authLoading, setAuthLoading] = useState(false);
   const router = useRouter();
 
+  // Function to verify caregiver exists
+  const verifyCaregiver = async (email) => {
+    if (!email) {
+      setCaregiverValid(null);
+      setCaregiverName('');
+      return;
+    }
+
+    setCaregiverVerifying(true);
+    try {
+      console.log('Searching for caregiver with email:', email.toLowerCase());
+
+      // Try multiple possible collection paths (simple path first)
+      const pathsToTry = [
+        'providers',
+        '/artifacts/remedyrx/public/data/providers',
+      ];
+
+      let found = false;
+
+      for (const path of pathsToTry) {
+        console.log('Trying collection path:', path);
+
+        const providersRef = collection(db, path);
+        const q = query(
+          providersRef,
+          where('email', '==', email.toLowerCase())
+        );
+        const querySnapshot = await getDocs(q);
+
+        console.log(
+          `Query result for path ${path} - docs found:`,
+          querySnapshot.docs.length
+        );
+
+        if (!querySnapshot.empty) {
+          const providerDoc = querySnapshot.docs[0];
+          const providerData = providerDoc.data();
+          console.log('Found provider:', providerData);
+          setCaregiverValid(true);
+          setCaregiverName(providerData.name || 'Provider');
+          found = true;
+          break;
+        } else {
+          // Debug: list all docs in this collection
+          const allProvidersSnapshot = await getDocs(providersRef);
+          console.log(`All providers in collection ${path}:`);
+          allProvidersSnapshot.docs.forEach((doc) => {
+            console.log('Provider doc:', doc.id, doc.data());
+          });
+        }
+      }
+
+      if (!found) {
+        console.log('No provider found with email:', email.toLowerCase());
+        setCaregiverValid(false);
+        setCaregiverName('');
+      }
+    } catch (error) {
+      console.error('Error verifying caregiver:', error);
+      setCaregiverValid(false);
+      setCaregiverName('');
+    } finally {
+      setCaregiverVerifying(false);
+    }
+  };
+
+  // Debounced caregiver verification
+  useEffect(() => {
+    if (formData.caregiverEmail && formData.role === 'patient' && isSignUp) {
+      const timeoutId = setTimeout(() => {
+        verifyCaregiver(formData.caregiverEmail);
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    } else {
+      setCaregiverValid(null);
+      setCaregiverName('');
+    }
+  }, [formData.caregiverEmail, formData.role, isSignUp]);
+
   const handleSubmit = async () => {
-    console.log(1);
+    setAuthLoading(true);
+    setErrors([]);
+
     try {
       if (isSignUp) {
+        // Validate caregiver for patient signup
+        if (formData.role === 'patient') {
+          if (!formData.caregiverEmail) {
+            setErrors(["Please enter your caregiver's email address."]);
+            setAuthLoading(false);
+            return;
+          }
+          if (caregiverValid !== true) {
+            setErrors(['Please enter a valid caregiver email address.']);
+            setAuthLoading(false);
+            return;
+          }
+        }
+
         const result = await signUp(
           formData.name,
           formData.email,
           formData.password,
-          formData.role
+          formData.role,
+          formData.caregiverEmail
         );
-        router.push('/dashboard');
+
+        if (formData.role === 'provider') {
+          router.push('/providerdashboard');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         const result = await signIn(formData.email, formData.password);
+        // Determine redirect based on user role after signin
         router.push('/dashboard');
       }
     } catch (error) {
-      console.error('Authentication error:', error.message);
+      console.error('Authentication error:', error);
+      const errorMessage = error.message || 'Authentication failed';
+      setErrors([errorMessage]);
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -48,7 +164,16 @@ const AuthPage = () => {
 
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
-    setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      role: 'patient',
+      caregiverEmail: '',
+    });
+    setCaregiverValid(null);
+    setCaregiverName('');
   };
 
   return (
@@ -109,6 +234,23 @@ const AuthPage = () => {
             </button>
           </div>
 
+          {/* Error Display */}
+          {errors.length > 0 && (
+            <div className='mb-4 p-3 bg-red-50 border border-red-200 rounded-lg'>
+              <div className='flex items-center gap-2 mb-2'>
+                <span className='text-red-500'>❌</span>
+                <h3 className='font-medium text-red-800'>
+                  Authentication Errors
+                </h3>
+              </div>
+              <ul className='list-disc pl-6 text-red-700 text-sm'>
+                {errors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Form */}
           <div>
             {isSignUp && (
@@ -165,9 +307,52 @@ const AuthPage = () => {
               </div>
             )}
 
+            {isSignUp && formData.role === 'patient' && (
+              <div className='mt-4'>
+                <Input
+                  label="Caregiver's Email"
+                  type='email'
+                  placeholder='caregiver@example.com'
+                  value={formData.caregiverEmail}
+                  onChange={handleInputChange('caregiverEmail')}
+                  required
+                />
+                {caregiverVerifying && (
+                  <p className='text-sm text-gray-500 mt-1'>
+                    <span className='inline-block animate-spin rounded-full h-3 w-3 border-b border-gray-500 mr-2'></span>
+                    Verifying caregiver...
+                  </p>
+                )}
+                {caregiverValid === true && (
+                  <p className='text-sm text-green-600 mt-1'>
+                    ✓ Caregiver found: {caregiverName}
+                  </p>
+                )}
+                {caregiverValid === false && (
+                  <p className='text-sm text-red-600 mt-1'>
+                    ✗ Caregiver not found. Please check the email address.
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className='mt-6'>
-              <Button type='button' variant='primary' onClick={handleSubmit}>
-                {isSignUp ? 'Create Account' : 'Sign In'}
+              <Button
+                type='button'
+                variant='primary'
+                onClick={handleSubmit}
+                disabled={
+                  authLoading ||
+                  (isSignUp &&
+                    formData.role === 'patient' &&
+                    caregiverVerifying)
+                }
+              >
+                {authLoading
+                  ? 'Processing...'
+                  : isSignUp
+                  ? 'Create Account'
+                  : 'Sign In'}
               </Button>
             </div>
           </div>

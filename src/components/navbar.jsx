@@ -1,24 +1,25 @@
 'use client';
 import { useAuth } from '@/context/auth';
-import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Button from './button';
 
 const Navbar = () => {
-  const { user, userData, isProvider, isPatient, loading } = useAuth();
+  const {
+    user,
+    userData,
+    isProvider,
+    isPatient,
+    loading,
+    signOut: authSignOut,
+  } = useAuth();
   const router = useRouter();
+
   const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      router.push('/authentication');
-    } catch (e) {
-      console.error('Sign out failed', e);
-      // Force redirect on error
-      router.push('/authentication');
-    }
+    const success = await authSignOut();
+    // Redirect regardless of success/failure
+    router.replace('/authentication');
   };
   return (
     <header className='bg-remedy-primary shadow-lg text-secondary'>

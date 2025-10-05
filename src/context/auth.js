@@ -2,7 +2,7 @@
 'use client';
 
 import { auth, db } from '@/lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
@@ -12,6 +12,7 @@ const AuthContext = createContext({
   isProvider: false,
   isPatient: false,
   loading: true,
+  signOut: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -53,12 +54,47 @@ export const AuthProvider = ({ children }) => {
     return () => unsub();
   }, [db, basePath, user]);
 
+  const signOut = async () => {
+    try {
+      // Clear localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('displayName');
+        localStorage.clear();
+      }
+
+      // Clear state immediately
+      setUser(null);
+      setUserData(null);
+      setLoading(false);
+
+      // Sign out from Firebase
+      await firebaseSignOut(auth);
+
+      return true;
+    } catch (error) {
+      console.error('Sign out error:', error);
+
+      // Clear state even on error
+      setUser(null);
+      setUserData(null);
+      setLoading(false);
+
+      // Clear localStorage on error too
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+      }
+
+      return false;
+    }
+  };
+
   const value = {
     user,
     userData,
     isProvider: userData?.role === 'care_provider',
     isPatient: userData?.role === 'patient',
     loading,
+    signOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
