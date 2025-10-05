@@ -2,61 +2,51 @@
 import { useState } from 'react';
 
 const ProviderDashboard = () => {
-  const [activeTab, setActiveTab] = useState('patients');
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [showAddPrescription, setShowAddPrescription] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
-  // Sample patients data
   const [patients] = useState([
     {
       id: 1,
       name: 'Tanzid Rahman',
-      age: 45,
-      lastVisit: 'Oct 1, 2025',
-      activeMeds: 4,
-      conditions: ['Hypertension', 'Type 2 Diabetes'],
+      medications: [
+        { name: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', time: '8:00 AM' },
+        { name: 'Metformin', dosage: '500mg', frequency: 'Twice daily', time: '8:00 AM, 8:00 PM' },
+      ],
     },
     {
       id: 2,
       name: 'Sarah Johnson',
-      age: 62,
-      lastVisit: 'Sept 28, 2025',
-      activeMeds: 6,
-      conditions: ['Heart Disease', 'High Cholesterol'],
+      medications: [
+        { name: 'Atorvastatin', dosage: '40mg', frequency: 'Once daily', time: '9:00 PM' },
+        { name: 'Aspirin', dosage: '81mg', frequency: 'Once daily', time: '9:00 AM' },
+        { name: 'Amlodipine', dosage: '5mg', frequency: 'Once daily', time: '9:00 AM' },
+      ],
     },
     {
       id: 3,
       name: 'Michael Chen',
-      age: 58,
-      lastVisit: 'Oct 3, 2025',
-      activeMeds: 3,
-      conditions: ['Arthritis'],
+      medications: [
+        { name: 'Ibuprofen', dosage: '400mg', frequency: 'As needed', time: 'As needed' },
+        { name: 'Omeprazole', dosage: '20mg', frequency: 'Once daily', time: '7:00 AM' },
+      ],
+    },
+    {
+      id: 4,
+      name: 'Emily Rodriguez',
+      medications: [
+        { name: 'Levothyroxine', dosage: '75mcg', frequency: 'Once daily', time: '6:00 AM' },
+      ],
     },
   ]);
 
-  // Sample prescriptions data
-  const [prescriptions, setPrescriptions] = useState([
-    {
-      id: 1,
-      patientName: 'Tanzid Rahman',
-      medication: 'Lisinopril',
-      dosage: '10mg',
-      frequency: 'Once daily',
-      startDate: 'Oct 1, 2025',
-      duration: '90 days',
-      refills: 3,
-    },
-    {
-      id: 2,
-      patientName: 'Sarah Johnson',
-      medication: 'Atorvastatin',
-      dosage: '40mg',
-      frequency: 'Once daily',
-      startDate: 'Sept 28, 2025',
-      duration: '90 days',
-      refills: 2,
-    },
+  const [todaySchedule] = useState([
+    { id: 1, patient: 'Tanzid Rahman', medication: 'Lisinopril 10mg', time: '8:00 AM', status: 'completed' },
+    { id: 2, patient: 'Sarah Johnson', medication: 'Aspirin 81mg', time: '9:00 AM', status: 'completed' },
+    { id: 3, patient: 'Sarah Johnson', medication: 'Amlodipine 5mg', time: '9:00 AM', status: 'completed' },
+    { id: 4, patient: 'Michael Chen', medication: 'Omeprazole 20mg', time: '7:00 AM', status: 'completed' },
+    { id: 5, patient: 'Tanzid Rahman', medication: 'Metformin 500mg', time: '8:00 PM', status: 'pending' },
+    { id: 6, patient: 'Sarah Johnson', medication: 'Atorvastatin 40mg', time: '9:00 PM', status: 'pending' },
   ]);
 
   const [newPrescription, setNewPrescription] = useState({
@@ -64,390 +54,271 @@ const ProviderDashboard = () => {
     medication: '',
     dosage: '',
     frequency: 'Once daily',
-    startDate: '',
-    duration: '30 days',
-    refills: 0,
-    instructions: '',
+    time: '',
   });
 
-  const handleAddPrescription = (e) => {
-    e.preventDefault();
-    const patient = patients.find(p => p.id === parseInt(newPrescription.patientId));
-    
-    if (patient) {
-      const prescription = {
-        id: prescriptions.length + 1,
-        patientName: patient.name,
-        ...newPrescription,
-      };
-      
-      setPrescriptions([prescription, ...prescriptions]);
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDay = firstDay.getDay();
+
+    const days = [];
+    for (let i = 0; i < startDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) days.push(i);
+    return days;
+  };
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const changeMonth = (delta) => {
+    const newDate = new Date(selectedDate);
+    newDate.setMonth(newDate.getMonth() + delta);
+    setSelectedDate(newDate);
+  };
+
+  const isToday = (day) => {
+    const today = new Date();
+    return (
+      day === today.getDate() &&
+      selectedDate.getMonth() === today.getMonth() &&
+      selectedDate.getFullYear() === today.getFullYear()
+    );
+  };
+
+  const handleAddPrescription = () => {
+    if (newPrescription.patientId && newPrescription.medication && newPrescription.dosage) {
       setShowAddPrescription(false);
       setNewPrescription({
         patientId: '',
         medication: '',
         dosage: '',
         frequency: 'Once daily',
-        startDate: '',
-        duration: '30 days',
-        refills: 0,
-        instructions: '',
+        time: '',
       });
     }
   };
 
-  const filteredPatients = patients.filter(patient =>
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6'>
-      <div className='max-w-7xl mx-auto'>
+    <div className="min-h-screen transition-colors duration-300 p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className='mb-8'>
-          <h1 className='text-4xl font-bold text-gray-800 mb-2'>Care Provider Dashboard</h1>
-          <p className='text-gray-600'>Manage patient prescriptions and medications</p>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2 text-gray-900 dark:text-gray-100">
+            Hi Tanzid
+          </h1>
+          
         </div>
 
-        {/* Quick Stats */}
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-4 mb-8'>
-          <div className='bg-white rounded-xl shadow-md p-6'>
-            <div className='text-3xl font-bold text-indigo-600 mb-2'>{patients.length}</div>
-            <div className='text-sm text-gray-600'>Total Patients</div>
-          </div>
-          <div className='bg-white rounded-xl shadow-md p-6'>
-            <div className='text-3xl font-bold text-green-600 mb-2'>{prescriptions.length}</div>
-            <div className='text-sm text-gray-600'>Active Prescriptions</div>
-          </div>
-          <div className='bg-white rounded-xl shadow-md p-6'>
-            <div className='text-3xl font-bold text-purple-600 mb-2'>2</div>
-            <div className='text-sm text-gray-600'>Pending Reviews</div>
-          </div>
-          <div className='bg-white rounded-xl shadow-md p-6'>
-            <div className='text-3xl font-bold text-orange-600 mb-2'>5</div>
-            <div className='text-sm text-gray-600'>Expiring Soon</div>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className='flex gap-2 mb-6'>
-          <button
-            onClick={() => setActiveTab('patients')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'patients'
-                ? 'bg-indigo-600 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            Patients
-          </button>
-          <button
-            onClick={() => setActiveTab('prescriptions')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'prescriptions'
-                ? 'bg-indigo-600 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            Prescriptions
-          </button>
-        </div>
-
-        {/* Main Content */}
-        <div className='bg-white rounded-2xl shadow-lg p-6'>
-          {activeTab === 'patients' && (
-            <div>
-              <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6'>
-                <h2 className='text-2xl font-bold text-gray-800'>Patient List</h2>
-                <input
-                  type='text'
-                  placeholder='Search patients...'
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className='px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
-                />
-              </div>
-
-              <div className='space-y-4'>
-                {filteredPatients.map((patient) => (
-                  <div
-                    key={patient.id}
-                    className='p-5 border-2 border-gray-200 rounded-xl hover:border-indigo-300 transition-all cursor-pointer'
-                    onClick={() => setSelectedPatient(patient)}
-                  >
-                    <div className='flex flex-col lg:flex-row lg:items-center justify-between gap-4'>
-                      <div className='flex-1'>
-                        <h3 className='text-xl font-semibold text-gray-800'>{patient.name}</h3>
-                        <div className='flex flex-wrap gap-2 mt-2'>
-                          {patient.conditions.map((condition, idx) => (
-                            <span
-                              key={idx}
-                              className='px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full'
-                            >
-                              {condition}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className='flex flex-wrap gap-4 text-sm text-gray-600'>
-                        <div>
-                          <span className='font-medium'>Age:</span> {patient.age}
-                        </div>
-                        <div>
-                          <span className='font-medium'>Active Meds:</span> {patient.activeMeds}
-                        </div>
-                        <div>
-                          <span className='font-medium'>Last Visit:</span> {patient.lastVisit}
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setNewPrescription({ ...newPrescription, patientId: patient.id.toString() });
-                          setShowAddPrescription(true);
-                        }}
-                        className='px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors'
-                      >
-                        Add Prescription
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {/* Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Calendar */}
+          <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg p-6 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Calendar</h2>
+              <button
+                onClick={() => setShowAddPrescription(true)}
+                className="px-3 py-1 rounded-lg text-white text-sm bg-[#3AAFA9] hover:bg-[#2B7A78] transition"
+              >
+                + Add
+              </button>
             </div>
-          )}
 
-          {activeTab === 'prescriptions' && (
-            <div>
-              <div className='flex justify-between items-center mb-6'>
-                <h2 className='text-2xl font-bold text-gray-800'>Recent Prescriptions</h2>
-                <button
-                  onClick={() => setShowAddPrescription(true)}
-                  className='px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold'
+            <div className="flex items-center justify-between mb-4">
+              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 transition">←</button>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}
+              </h3>
+              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 transition">→</button>
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {['Su','Mo','Tu','We','Th','Fr','Sa'].map((day) => (
+                <div key={day} className="text-center text-xs font-semibold py-2 text-[#2B7A78]">
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-1">
+              {getDaysInMonth(selectedDate).map((day, i) => (
+                <div
+                  key={i}
+                  className={`aspect-square flex items-center justify-center text-sm rounded-lg cursor-pointer 
+                    ${!day ? 'invisible' : ''}
+                    ${
+                      isToday(day)
+                        ? 'bg-[#3AAFA9] text-white font-bold'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
                 >
-                  + New Prescription
-                </button>
-              </div>
+                  {day}
+                </div>
+              ))}
+            </div>
 
-              <div className='space-y-4'>
-                {prescriptions.map((prescription) => (
-                  <div
-                    key={prescription.id}
-                    className='p-5 border-2 border-gray-200 rounded-xl hover:border-green-300 transition-all'
-                  >
-                    <div className='flex flex-col lg:flex-row justify-between gap-4'>
-                      <div className='flex-1'>
-                        <div className='flex items-center gap-3 mb-2'>
-                          <h3 className='text-xl font-semibold text-gray-800'>
-                            {prescription.medication}
-                          </h3>
-                          <span className='px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium'>
-                            Active
-                          </span>
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <h3 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">Quick Stats</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Total Patients</span>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{patients.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Today's Doses</span>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{todaySchedule.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Completed</span>
+                  <span className="font-semibold text-[#80CFA9]">
+                    {todaySchedule.filter((s) => s.status === 'completed').length}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Today's Schedule */}
+          <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg p-6 transition-colors">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+              Today's Schedule
+            </h2>
+            <p className="text-sm mb-4 text-gray-600 dark:text-gray-400">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </p>
+
+            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+              {todaySchedule.filter((i) => i.status === 'pending').length === 0 ? (
+                <div className="text-center py-8 text-[#3AAFA9]">
+                  <p className="text-lg mb-2">🎉 All done for today!</p>
+                  <p className="text-sm">No pending medications</p>
+                </div>
+              ) : (
+                todaySchedule
+                  .filter((i) => i.status === 'pending')
+                  .map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-4 rounded-xl border-2 border-[#3AAFA9] bg-[#f8fffe] dark:bg-zinc-800 transition"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                              {item.time}
+                            </span>
+                            <span className="text-xs text-[#3AAFA9]">⏰</span>
+                          </div>
+                          <h4 className="font-semibold text-gray-900 dark:text-gray-100">
+                            {item.patient}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">{item.medication}</p>
                         </div>
-                        <p className='text-gray-600 mb-2'>
-                          Patient: <span className='font-medium'>{prescription.patientName}</span>
-                        </p>
-                        <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm'>
-                          <div>
-                            <span className='text-gray-500'>Dosage:</span>
-                            <div className='font-medium'>{prescription.dosage}</div>
-                          </div>
-                          <div>
-                            <span className='text-gray-500'>Frequency:</span>
-                            <div className='font-medium'>{prescription.frequency}</div>
-                          </div>
-                          <div>
-                            <span className='text-gray-500'>Duration:</span>
-                            <div className='font-medium'>{prescription.duration}</div>
-                          </div>
-                          <div>
-                            <span className='text-gray-500'>Refills:</span>
-                            <div className='font-medium'>{prescription.refills}</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className='flex flex-col justify-center gap-2'>
-                        <button className='px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm'>
-                          Edit
-                        </button>
-                        <button className='px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm'>
-                          Cancel
+                        <button className="bg-[#3AAFA9] hover:bg-[#2B7A78] text-white px-3 py-1 rounded-lg text-xs transition">
+                          Mark Done
                         </button>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))
+              )}
             </div>
-          )}
+          </div>
+        </div>
+
+        {/* Patient List */}
+        <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg p-6 transition-colors">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            Patient Medications
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {patients.map((p) => (
+              <div
+                key={p.id}
+                className="p-4 rounded-xl border border-gray-200 dark:border-zinc-700 transition"
+              >
+                <div className="flex justify-between mb-3">
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100">{p.name}</h3>
+                  <span className="px-2 py-1 text-xs rounded-full bg-[#e6f7f6] dark:bg-zinc-800 text-[#2B7A78]">
+                    {p.medications.length} meds
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {p.medications.map((m, i) => (
+                    <div key={i} className="p-3 rounded-lg bg-[#f8fffe] dark:bg-zinc-700">
+                      <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">{m.name}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">
+                        {m.dosage} • {m.frequency}
+                      </p>
+                      <p className="text-xs mt-1 text-[#2B7A78]">⏰ {m.time}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Add Prescription Modal */}
+      {/* Modal */}
       {showAddPrescription && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50'>
-          <div className='bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
-            <div className='p-6'>
-              <div className='flex justify-between items-center mb-6'>
-                <h2 className='text-2xl font-bold text-gray-800'>New Prescription</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  New Prescription
+                </h2>
                 <button
                   onClick={() => setShowAddPrescription(false)}
-                  className='text-gray-500 hover:text-gray-700 text-2xl'
+                  className="text-2xl text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                 >
                   ×
                 </button>
               </div>
 
-              <form onSubmit={handleAddPrescription} className='space-y-4'>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-2'>
-                    Patient *
-                  </label>
-                  <select
-                    required
-                    value={newPrescription.patientId}
-                    onChange={(e) => setNewPrescription({ ...newPrescription, patientId: e.target.value })}
-                    className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
-                  >
-                    <option value=''>Select a patient</option>
-                    {patients.map((patient) => (
-                      <option key={patient.id} value={patient.id}>
-                        {patient.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      Medication Name *
+              <div className="space-y-4">
+                {['Patient', 'Medication Name', 'Dosage', 'Frequency', 'Time'].map((label, idx) => (
+                  <div key={idx}>
+                    <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
+                      {label}
                     </label>
                     <input
-                      type='text'
-                      required
-                      value={newPrescription.medication}
-                      onChange={(e) => setNewPrescription({ ...newPrescription, medication: e.target.value })}
-                      placeholder='e.g., Lisinopril'
-                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                      type="text"
+                      className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#3AAFA9]"
+                      placeholder={
+                        label === 'Medication Name'
+                          ? 'e.g., Lisinopril'
+                          : label === 'Dosage'
+                          ? 'e.g., 10mg'
+                          : label === 'Time'
+                          ? 'e.g., 8:00 AM'
+                          : ''
+                      }
                     />
                   </div>
+                ))}
 
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      Dosage *
-                    </label>
-                    <input
-                      type='text'
-                      required
-                      value={newPrescription.dosage}
-                      onChange={(e) => setNewPrescription({ ...newPrescription, dosage: e.target.value })}
-                      placeholder='e.g., 10mg'
-                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
-                    />
-                  </div>
-                </div>
-
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      Frequency *
-                    </label>
-                    <select
-                      required
-                      value={newPrescription.frequency}
-                      onChange={(e) => setNewPrescription({ ...newPrescription, frequency: e.target.value })}
-                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
-                    >
-                      <option>Once daily</option>
-                      <option>Twice daily</option>
-                      <option>Three times daily</option>
-                      <option>Four times daily</option>
-                      <option>Every 12 hours</option>
-                      <option>Every 8 hours</option>
-                      <option>As needed</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      Start Date *
-                    </label>
-                    <input
-                      type='date'
-                      required
-                      value={newPrescription.startDate}
-                      onChange={(e) => setNewPrescription({ ...newPrescription, startDate: e.target.value })}
-                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
-                    />
-                  </div>
-                </div>
-
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      Duration *
-                    </label>
-                    <select
-                      required
-                      value={newPrescription.duration}
-                      onChange={(e) => setNewPrescription({ ...newPrescription, duration: e.target.value })}
-                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
-                    >
-                      <option>30 days</option>
-                      <option>60 days</option>
-                      <option>90 days</option>
-                      <option>6 months</option>
-                      <option>1 year</option>
-                      <option>Ongoing</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      Number of Refills
-                    </label>
-                    <input
-                      type='number'
-                      min='0'
-                      max='12'
-                      value={newPrescription.refills}
-                      onChange={(e) => setNewPrescription({ ...newPrescription, refills: parseInt(e.target.value) || 0 })}
-                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-2'>
-                    Special Instructions
-                  </label>
-                  <textarea
-                    value={newPrescription.instructions}
-                    onChange={(e) => setNewPrescription({ ...newPrescription, instructions: e.target.value })}
-                    placeholder='e.g., Take with food, avoid alcohol...'
-                    rows='3'
-                    className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'
-                  />
-                </div>
-
-                <div className='flex gap-3 pt-4'>
+                <div className="flex gap-3 pt-4">
                   <button
-                    type='submit'
-                    className='flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold'
+                    onClick={handleAddPrescription}
+                    className="flex-1 px-6 py-3 bg-[#3AAFA9] hover:bg-[#2B7A78] text-white rounded-lg font-semibold transition"
                   >
-                    Create Prescription
+                    Add Prescription
                   </button>
                   <button
-                    type='button'
                     onClick={() => setShowAddPrescription(false)}
-                    className='px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold'
+                    className="px-6 py-3 bg-[#e6f7f6] dark:bg-gray-700 text-[#2B7A78] rounded-lg font-semibold transition"
                   >
                     Cancel
                   </button>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
