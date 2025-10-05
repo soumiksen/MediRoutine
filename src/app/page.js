@@ -66,7 +66,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Solution Section */}
+{/* Solution Section */}
 <section className='py-20'>
   <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
     <div className='text-center mb-16'>
@@ -78,121 +78,82 @@ export default function Home() {
       </p>
     </div>
 
-    {/* Option 1: Doctor Voice Input */}
-    <div className='mb-20'>
-      <h3 className='text-3xl font-bold text-center mb-12'>
-        Option 1: Your Doctor Records Instructions
-      </h3>
-      
-      <div className='grid md:grid-cols-2 gap-12 items-center mb-16'>
-        <div className='bg-remedy-teal text-remedy-primary p-12 rounded-3xl shadow-2xl text-center'>
-          <div className='text-8xl mb-4'>🎤</div>
-          <p className='text-2xl font-semibold'>
-            Step 1: Doctor Speaks
-          </p>
-        </div>
-        <div>
-          <h4 className='text-2xl font-bold mb-4'>
-            Doctor Records Your Instructions
-          </h4>
-          <p className='text-xl leading-relaxed'>
-            Your doctor simply speaks into the app—medicine names, dosages, timing, and special instructions. No typing needed. Just their voice explaining everything clearly.
-          </p>
+    <div className='grid md:grid-cols-2 gap-12'>
+      {/* Option 1: Doctor Voice Input */}
+      <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg'>
+        <h3 className='text-2xl font-bold text-center mb-8'>
+          Option 1: Doctor Voice Input
+        </h3>
+        
+        <div className='space-y-8'>
+          <div className='text-center'>
+            <div className='w-24 h-24 bg-remedy-teal rounded-full mx-auto mb-4 flex items-center justify-center text-5xl'>
+              🎤
+            </div>
+            <h4 className='text-xl font-bold mb-2'>Step 1: Doctor Speaks</h4>
+            <p className='text-base'>
+              Your doctor records medicine names, dosages, timing, and instructions directly into the app.
+            </p>
+          </div>
+
+          <div className='text-center'>
+            <div className='w-24 h-24 bg-remedy-aqua rounded-full mx-auto mb-4 flex items-center justify-center text-5xl'>
+              🤖
+            </div>
+            <h4 className='text-xl font-bold mb-2'>Step 2: AI Organizes</h4>
+            <p className='text-base'>
+              Our technology listens and creates your personalized daily schedule automatically.
+            </p>
+          </div>
+
+          <div className='text-center'>
+            <div className='w-24 h-24 bg-remedy-success rounded-full mx-auto mb-4 flex items-center justify-center text-5xl'>
+              ✅
+            </div>
+            <h4 className='text-xl font-bold mb-2'>Step 3: Follow Your Plan</h4>
+            <p className='text-base'>
+              See exactly what to take and when, with reminders and easy-to-read schedules.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className='grid md:grid-cols-2 gap-12 items-center mb-16'>
-        <div className='order-2 md:order-1'>
-          <h4 className='text-2xl font-bold mb-4'>
-            AI Organizes Everything
-          </h4>
-          <p className='text-xl leading-relaxed'>
-            Our smart technology listens and understands the instructions, then creates your personalized daily schedule automatically. No confusion, no missed details.
-          </p>
-        </div>
-        <div className='bg-remedy-aqua text-remedy-primary p-12 rounded-3xl shadow-2xl text-center order-1 md:order-2'>
-          <div className='text-8xl mb-4'>🤖</div>
-          <p className='text-2xl font-semibold'>
-            Step 2: AI Creates Your Plan
-          </p>
-        </div>
-      </div>
+      {/* Option 2: OCR Photo */}
+      <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg'>
+        <h3 className='text-2xl font-bold text-center mb-8'>
+          Option 2: Photo Scan (OCR)
+        </h3>
+        
+        <div className='space-y-8'>
+          <div className='text-center'>
+            <div className='w-24 h-24 bg-remedy-teal rounded-full mx-auto mb-4 flex items-center justify-center text-5xl'>
+              📸
+            </div>
+            <h4 className='text-xl font-bold mb-2'>Step 1: Take a Photo</h4>
+            <p className='text-base'>
+              Snap a picture of your prescription bottle or medicine packaging label.
+            </p>
+          </div>
 
-      <div className='grid md:grid-cols-2 gap-12 items-center'>
-        <div className='bg-remedy-success text-remedy-primary p-12 rounded-3xl shadow-2xl text-center'>
-          <div className='text-8xl mb-4'>✅</div>
-          <p className='text-2xl font-semibold'>
-            Step 3: Follow Your Schedule
-          </p>
-        </div>
-        <div>
-          <h4 className='text-2xl font-bold mb-4'>
-            Your Daily Plan is Ready
-          </h4>
-          <p className='text-xl leading-relaxed'>
-            See exactly what to take and when—hour by hour. Large, easy-to-read text with reminders. Everything your doctor said, organized perfectly.
-          </p>
-        </div>
-      </div>
-    </div>
+          <div className='text-center'>
+            <div className='w-24 h-24 bg-remedy-aqua rounded-full mx-auto mb-4 flex items-center justify-center text-5xl'>
+              🔍
+            </div>
+            <h4 className='text-xl font-bold mb-2'>Step 2: AI Reads It</h4>
+            <p className='text-base'>
+              Our technology scans the label and understands all the medicine information.
+            </p>
+          </div>
 
-    {/* Divider */}
-    <div className='border-t-4 border-remedy-secondary my-20'></div>
-
-    {/* Option 2: OCR Photo */}
-    <div>
-      <h3 className='text-3xl font-bold text-center mb-12'>
-        Option 2: Take a Photo of Your Medicine
-      </h3>
-      
-      <div className='grid md:grid-cols-2 gap-12 items-center mb-16'>
-        <div className='bg-remedy-teal text-remedy-primary p-12 rounded-3xl shadow-2xl text-center'>
-          <div className='text-8xl mb-4'>📸</div>
-          <p className='text-2xl font-semibold'>
-            Step 1: Snap a Picture
-          </p>
-        </div>
-        <div>
-          <h4 className='text-2xl font-bold mb-4'>
-            Photograph Your Medicine Label
-          </h4>
-          <p className='text-xl leading-relaxed'>
-            Just take a clear photo of your prescription bottle or medicine packaging—where it shows the name, dosage, and instructions. That's all you need.
-          </p>
-        </div>
-      </div>
-
-      <div className='grid md:grid-cols-2 gap-12 items-center mb-16'>
-        <div className='order-2 md:order-1'>
-          <h4 className='text-2xl font-bold mb-4'>
-            AI Reads the Label
-          </h4>
-          <p className='text-xl leading-relaxed'>
-            Our technology scans and understands the medicine information—name, strength, when to take it, and any special instructions. It reads the label so you don't have to squint.
-          </p>
-        </div>
-        <div className='bg-remedy-aqua text-remedy-primary p-12 rounded-3xl shadow-2xl text-center order-1 md:order-2'>
-          <div className='text-8xl mb-4'>🔍</div>
-          <p className='text-2xl font-semibold'>
-            Step 2: AI Scans & Understands
-          </p>
-        </div>
-      </div>
-
-      <div className='grid md:grid-cols-2 gap-12 items-center'>
-        <div className='bg-remedy-success text-remedy-primary p-12 rounded-3xl shadow-2xl text-center'>
-          <div className='text-8xl mb-4'>📅</div>
-          <p className='text-2xl font-semibold'>
-            Step 3: Get Your Schedule
-          </p>
-        </div>
-        <div>
-          <h4 className='text-2xl font-bold mb-4'>
-            Your Medicine Added to Your Routine
-          </h4>
-          <p className='text-xl leading-relaxed'>
-            The medicine is automatically added to your daily schedule with reminders. See when to take it, with food or without, and any important warnings—all in plain language.
-          </p>
+          <div className='text-center'>
+            <div className='w-24 h-24 bg-remedy-success rounded-full mx-auto mb-4 flex items-center justify-center text-5xl'>
+              📅
+            </div>
+            <h4 className='text-xl font-bold mb-2'>Step 3: Get Your Schedule</h4>
+            <p className='text-base'>
+              Medicine automatically added to your routine with reminders in plain language.
+            </p>
+          </div>
         </div>
       </div>
     </div>
