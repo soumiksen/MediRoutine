@@ -7,7 +7,6 @@
 
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js-black?logo=nextdotjs)](https://nextjs.org/)
 [![Firebase](https://img.shields.io/badge/Database-Firebase-orange?logo=firebase)](https://firebase.google.com/)
-[![Auth0](https://img.shields.io/badge/Auth-Auth0-blue?logo=auth0)](https://auth0.com/)
 [![Gemini API](https://img.shields.io/badge/AI-Gemini-purple?logo=google)](https://ai.google.dev/gemini-api)
 [![Google Calendar API](https://img.shields.io/badge/API-Google%20Calendar-lightgrey?logo=googlecalendar)](https://developers.google.com/calendar)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
