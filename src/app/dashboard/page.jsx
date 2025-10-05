@@ -1,5 +1,5 @@
 'use client';
-import Button from '@/components/largebutton';
+import Button from '@/components/button';
 import { useEffect, useState } from 'react';
 
 const DashboardPage = () => {
