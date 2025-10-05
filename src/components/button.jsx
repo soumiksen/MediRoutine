@@ -1,6 +1,6 @@
 const Button = ({ children }) => {
   return (
-    <button className='bg-remedy-aqua px-4 py-2 rounded-full text-white hover:cursor-pointer'>
+    <button className='bg-remedy-aqua px-8 py-4 rounded-full text-white text-xl font-semibold hover:cursor-pointer hover:bg-opacity-90 transition-all'>
       {children}
     </button>
   );

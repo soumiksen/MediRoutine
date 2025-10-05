@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className='bg-remedy-primary text-remedy-secondary'>
       {/* Hero Section */}
-      <section className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20'>
+      <section className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
         <div className='text-center'>
           <h1 className='text-5xl md:text-6xl font-bold mb-6 leading-tight'>
             Never Miss a Dose.
@@ -16,10 +16,9 @@ export default function Home() {
             you can actually follow.
           </p>
           <Button>
-            Try RemedyRX Now - It's Free!
+            Try RemedyRX Now!
           </Button>
           <p className='mt-4 text-lg'>
-            100% Free Forever • Takes 2 minutes to set up
           </p>
         </div>
       </section>
