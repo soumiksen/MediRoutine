@@ -1,6 +1,35 @@
+'use client';
+
 import Button from '@/components/largebutton';
+import { useAuth } from '@/context/auth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Home() {
+  const { user, isProvider, isPatient, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (isProvider) {
+        router.replace('/providerdashboard');
+      } else if (isPatient) {
+        router.replace('/dashboard');
+      }
+      // If user exists but no role, stay on landing page
+    }
+  }, [loading, user, isProvider, isPatient, router]);
+
+  // Show loading or redirect in progress
+  if (loading) {
+    return (
+      <div className='bg-remedy-primary text-remedy-secondary min-h-screen flex items-center justify-center'>
+        <div className='text-2xl'>Loading...</div>
+      </div>
+    );
+  }
+
+  // Only show landing page if user is not authenticated
   return (
     <div className='bg-remedy-primary text-remedy-secondary'>
       {/* Hero Section */}

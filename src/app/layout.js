@@ -1,5 +1,6 @@
 import Navbar from '@/components/navbar';
 import './globals.css';
+import { AuthProvider } from '@/context/auth';
 
 export const metadata = {
   title: 'RemedyRX',
@@ -11,8 +12,11 @@ export default function RootLayout({ children }) {
     <html lang='en'>
     
       <body className={`antialiased`}>
-        <Navbar/>
-        {children}</body>
+        <AuthProvider>
+          <Navbar/>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }
