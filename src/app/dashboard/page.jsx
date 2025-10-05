@@ -8,7 +8,6 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  orderBy,
   query,
   where,
 } from 'firebase/firestore';
@@ -46,8 +45,12 @@ const DashboardPage = () => {
     const unsubscribe = onSnapshot(
       routinesQuery,
       (snapshot) => {
-        console.log('📋 Received routines snapshot:', snapshot.docs.length, 'documents');
-        
+        console.log(
+          '📋 Received routines snapshot:',
+          snapshot.docs.length,
+          'documents'
+        );
+
         const routinesData = snapshot.docs.map((doc) => {
           const data = doc.data();
           console.log('📝 Routine document:', doc.id, data);
@@ -59,15 +62,19 @@ const DashboardPage = () => {
 
         // Filter active routines client-side and sort manually
         const activeRoutines = routinesData
-          .filter(routine => routine.active !== false) // Include undefined as active
+          .filter((routine) => routine.active !== false) // Include undefined as active
           .sort((a, b) => {
             const aTime = a.createdAt || '';
             const bTime = b.createdAt || '';
             return bTime.localeCompare(aTime);
           });
 
-        console.log('✅ Processed routines:', activeRoutines.length, 'active routines');
-        
+        console.log(
+          '✅ Processed routines:',
+          activeRoutines.length,
+          'active routines'
+        );
+
         setRoutines(activeRoutines);
         setRoutinesLoading(false);
       },

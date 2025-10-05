@@ -80,8 +80,11 @@ export const signUp = async (
     } else {
       // Patient role - find caregiver and add to their patients collection
       if (caregiverEmail) {
-        console.log('🔍 Looking for caregiver with email:', caregiverEmail.toLowerCase());
-        
+        console.log(
+          '🔍 Looking for caregiver with email:',
+          caregiverEmail.toLowerCase()
+        );
+
         // Find the caregiver provider (use simple path)
         const providersRef = collection(db, 'providers');
         const q = query(
@@ -90,14 +93,22 @@ export const signUp = async (
         );
         const querySnapshot = await getDocs(q);
 
-        console.log('📋 Caregiver query results:', querySnapshot.docs.length, 'providers found');
+        console.log(
+          '📋 Caregiver query results:',
+          querySnapshot.docs.length,
+          'providers found'
+        );
 
         if (!querySnapshot.empty) {
           const providerDoc = querySnapshot.docs[0];
           const caregiverId = providerDoc.id;
-          
+
           console.log('✅ Found caregiver:', caregiverId, providerDoc.data());
-          console.log('📁 Adding patient to collection: providers/' + caregiverId + '/patients');
+          console.log(
+            '📁 Adding patient to collection: providers/' +
+              caregiverId +
+              '/patients'
+          );
 
           // Add patient to caregiver's patients collection
           const patientData = {
@@ -118,13 +129,22 @@ export const signUp = async (
           };
 
           console.log('💾 Patient data to save:', patientData);
-          
+
           try {
-            const docRef = await addDoc(collection(db, `providers/${caregiverId}/patients`), patientData);
+            const docRef = await addDoc(
+              collection(db, `providers/${caregiverId}/patients`),
+              patientData
+            );
             console.log('✅ Patient added successfully with ID:', docRef.id);
           } catch (addError) {
-            console.error('❌ Error adding patient to provider collection:', addError);
-            throw new Error('Failed to add patient to caregiver dashboard: ' + addError.message);
+            console.error(
+              '❌ Error adding patient to provider collection:',
+              addError
+            );
+            throw new Error(
+              'Failed to add patient to caregiver dashboard: ' +
+                addError.message
+            );
           }
 
           // Also create patient record with caregiver reference

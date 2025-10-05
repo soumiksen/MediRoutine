@@ -12,7 +12,6 @@ import {
   doc,
   getDocs,
   onSnapshot,
-  orderBy,
   query,
   updateDoc,
   where,
@@ -41,18 +40,22 @@ const ProviderDashboard = () => {
     if (!user) return;
 
     console.log('🏥 Provider dashboard loading patients for user:', user.uid);
-    
+
     const basePath = process.env.NEXT_PUBLIC_APP_ID || 'remedyrx';
     const patientsRef = collection(db, `providers/${user.uid}/patients`);
-    
+
     // Don't use orderBy initially to avoid missing field errors
     const patientsQuery = query(patientsRef);
 
     const unsubscribe = onSnapshot(
       patientsQuery,
       (snapshot) => {
-        console.log('📊 Received patient data snapshot:', snapshot.docs.length, 'documents');
-        
+        console.log(
+          '📊 Received patient data snapshot:',
+          snapshot.docs.length,
+          'documents'
+        );
+
         const patientsData = snapshot.docs.map((doc) => {
           const data = doc.data();
           console.log('👤 Patient document:', doc.id, data);
@@ -73,15 +76,19 @@ const ProviderDashboard = () => {
         const twentyFourHoursAgo = new Date(
           Date.now() - 24 * 60 * 60 * 1000
         ).toISOString();
-        const newPatients = patientsData.filter(
-          (patient) => {
-            const patientTime = patient.addedAt || patient.createdAt;
-            return patientTime && patientTime > twentyFourHoursAgo;
-          }
+        const newPatients = patientsData.filter((patient) => {
+          const patientTime = patient.addedAt || patient.createdAt;
+          return patientTime && patientTime > twentyFourHoursAgo;
+        });
+
+        console.log(
+          '✅ Processed patients:',
+          patientsData.length,
+          'total,',
+          newPatients.length,
+          'new'
         );
 
-        console.log('✅ Processed patients:', patientsData.length, 'total,', newPatients.length, 'new');
-        
         setPatients(patientsData);
         setNewPatientNotifications(newPatients);
         setPatientsLoading(false);
@@ -111,8 +118,12 @@ const ProviderDashboard = () => {
     const unsubscribe = onSnapshot(
       routinesQuery,
       (snapshot) => {
-        console.log('📋 Received routines snapshot:', snapshot.docs.length, 'documents');
-        
+        console.log(
+          '📋 Received routines snapshot:',
+          snapshot.docs.length,
+          'documents'
+        );
+
         const routinesData = snapshot.docs.map((doc) => {
           const data = doc.data();
           console.log('🔄 Routine document:', doc.id, data);
