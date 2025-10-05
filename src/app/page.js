@@ -169,7 +169,7 @@ export default function Home() {
           <p className='text-2xl text-remedy-primary mb-4'>
             Join thousands who've simplified their medication routine
           </p>
-          <Button>Get Started Now - Free Forever!</Button>
+          <Button>Get Started Now!</Button>
           <p className='text-remedy-primary text-lg mt-4'>
             ✓ 100% Free ✓ Easy to Sign Up ✓ Works instantly
           </p>
