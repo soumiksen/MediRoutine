@@ -1,13 +1,20 @@
 'use client';
+import { useAuth } from '@/context/auth';
+import { db } from '@/lib/firebase';
+import { addDoc, collection } from 'firebase/firestore';
 import { useState } from 'react';
 import Button from './button';
 
 const RoutineManager = ({ patients, onRoutineUpdate }) => {
+  const { user } = useAuth();
   const [selectedPatient, setSelectedPatient] = useState('');
   const [routineName, setRoutineName] = useState('');
   const [routineType, setRoutineType] = useState('medication'); // medication, meal, exercise, general
   const [routineItems, setRoutineItems] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null); // null, 'success', 'error'
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [newItem, setNewItem] = useState({
     type: 'medication',
@@ -68,26 +75,145 @@ const RoutineManager = ({ patients, onRoutineUpdate }) => {
     setRoutineItems(routineItems.filter((item) => item.id !== id));
   };
 
-  const saveRoutine = () => {
-    if (!selectedPatient || !routineName || routineItems.length === 0) return;
+  const saveRoutine = async () => {
+    console.log('🚀 Starting routine save process');
+    console.log('📊 Form state:', {
+      selectedPatient,
+      routineName,
+      routineItems: routineItems.length,
+      user: user ? 'logged in' : 'not logged in',
+      userUid: user?.uid,
+    });
 
-    const routine = {
-      id: Date.now(),
-      patientId: selectedPatient,
-      name: routineName,
-      type: routineType,
-      items: routineItems,
-      createdAt: new Date().toISOString(),
-      active: true,
-    };
+    // Clear previous status
+    setSaveStatus(null);
+    setErrorMessage('');
 
-    onRoutineUpdate(routine);
+    // Validation
+    if (!selectedPatient || !routineName || routineItems.length === 0) {
+      const message =
+        'Please fill in all required fields and add at least one routine item.';
+      setErrorMessage(message);
+      setSaveStatus('error');
+      return;
+    }
 
-    // Reset form
-    setSelectedPatient('');
-    setRoutineName('');
-    setRoutineItems([]);
-    setShowForm(false);
+    if (!user) {
+      const message = 'You must be logged in to create routines.';
+      setErrorMessage(message);
+      setSaveStatus('error');
+      return;
+    }
+
+    if (!user.uid) {
+      const message = 'User authentication error - no user ID found.';
+      setErrorMessage(message);
+      setSaveStatus('error');
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      // Debug patient data
+      console.log('👥 Available patients:', patients);
+      console.log('🔍 Looking for patient ID:', selectedPatient);
+
+      // Find the selected patient details
+      const selectedPatientData = patients.find(
+        (p) => p.id === selectedPatient
+      );
+      console.log('👤 Selected patient data:', selectedPatientData);
+
+      if (!selectedPatientData) {
+        throw new Error(
+          `Selected patient not found. Patient ID: ${selectedPatient}`
+        );
+      }
+
+      console.log(
+        '💾 Creating routine for patient:',
+        selectedPatientData.name,
+        '(',
+        selectedPatient,
+        ')'
+      );
+      console.log('🏥 Provider UID:', user.uid);
+
+      const routine = {
+        patientId: selectedPatientData.patientId || selectedPatient, // Use actual patient UID
+        patientName: selectedPatientData.name,
+        patientEmail: selectedPatientData.email,
+        providerId: user.uid,
+        providerName: user.displayName || user.email,
+        name: routineName,
+        type: routineType,
+        items: routineItems,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        active: true,
+      };
+
+      console.log('📋 Complete routine data to save:', routine);
+
+      // Test Firestore connection first
+      console.log('🔥 Testing Firestore connection...');
+      const collectionPath = `providers/${user.uid}/routines`;
+      console.log('📂 Collection path:', collectionPath);
+
+      const routinesRef = collection(db, collectionPath);
+      console.log('📚 Collection reference created:', routinesRef);
+
+      console.log('💾 Attempting to save document...');
+      const docRef = await addDoc(routinesRef, routine);
+
+      console.log('✅ Routine saved successfully!');
+      console.log('🆔 Document ID:', docRef.id);
+      console.log('📍 Document path:', docRef.path);
+
+      // Call the callback if provided (for local state updates)
+      if (onRoutineUpdate) {
+        console.log('🔄 Calling onRoutineUpdate callback');
+        onRoutineUpdate({ id: docRef.id, ...routine });
+      }
+
+      // Set success state
+      setSaveStatus('success');
+
+      // Reset form after a delay to show success message
+      setTimeout(() => {
+        setSelectedPatient('');
+        setRoutineName('');
+        setRoutineItems([]);
+        setShowForm(false);
+        setSaveStatus(null);
+      }, 2000);
+    } catch (error) {
+      console.error('❌ DETAILED Error saving routine:');
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Error code:', error.code);
+      console.error('❌ Full error:', error);
+
+      let userFriendlyMessage = 'Failed to create routine. ';
+
+      if (error.code === 'permission-denied') {
+        userFriendlyMessage +=
+          'Permission denied - check Firebase security rules.';
+      } else if (error.code === 'not-found') {
+        userFriendlyMessage +=
+          'Collection not found - check Firebase configuration.';
+      } else if (error.message.includes('network')) {
+        userFriendlyMessage +=
+          'Network error - check your internet connection.';
+      } else {
+        userFriendlyMessage += error.message;
+      }
+
+      setErrorMessage(userFriendlyMessage);
+      setSaveStatus('error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const updateTimeSlot = (itemId, slotIndex, time) => {
@@ -104,19 +230,73 @@ const RoutineManager = ({ patients, onRoutineUpdate }) => {
   };
 
   return (
-    <div className='bg-white rounded-lg shadow-md p-6'>
+    <div className='rounded-lg shadow-md p-6'>
       <div className='flex justify-between items-center mb-6'>
-        <h2 className='text-2xl font-bold text-gray-800'>Routine Management</h2>
+        <h2 className='text-2xl font-bold'>Routine Management</h2>
         <Button onClick={() => setShowForm(!showForm)}>
           {showForm ? 'Cancel' : 'Create New Routine'}
         </Button>
       </div>
 
       {showForm && (
-        <div className='border rounded-lg p-6 mb-6 bg-gray-50'>
+        <div className='rounded-lg p-6 mb-6'>
+          {/* Status Messages */}
+          {saveStatus === 'success' && (
+            <div className='mb-4 p-4 bg-green-50 border border-green-200 rounded-lg'>
+              <div className='flex items-center'>
+                <div className='flex-shrink-0'>
+                  <span className='text-green-500 text-xl'>✅</span>
+                </div>
+                <div className='ml-3'>
+                  <p className='text-green-800 font-medium'>
+                    Routine Created Successfully!
+                  </p>
+                  <p className='text-green-600 text-sm'>
+                    The routine has been saved and is now active.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {saveStatus === 'error' && (
+            <div className='mb-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
+              <div className='flex items-center'>
+                <div className='flex-shrink-0'>
+                  <span className='text-red-500 text-xl'>❌</span>
+                </div>
+                <div className='ml-3'>
+                  <p className='text-red-800 font-medium'>
+                    Failed to Create Routine
+                  </p>
+                  <p className='text-red-600 text-sm'>{errorMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Debug Info (for development - can be removed later) */}
+          <div className='mb-4 p-3 bg-gray-100 border rounded text-xs'>
+            <p>
+              <strong>Debug Info:</strong>
+            </p>
+            <p>
+              User: {user ? `${user.email} (${user.uid})` : 'Not logged in'}
+            </p>
+            <p>Patients available: {patients.length}</p>
+            <p>Selected patient: {selectedPatient}</p>
+            <p>Routine items: {routineItems.length}</p>
+            <p>
+              Form valid:{' '}
+              {selectedPatient && routineName && routineItems.length > 0
+                ? 'Yes'
+                : 'No'}
+            </p>
+          </div>
+
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
             <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
+              <label className='block text-sm font-medium mb-2'>
                 Select Patient
               </label>
               <select
@@ -134,7 +314,7 @@ const RoutineManager = ({ patients, onRoutineUpdate }) => {
             </div>
 
             <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
+              <label className='block text-sm font-medium mb-2'>
                 Routine Name
               </label>
               <input
@@ -148,7 +328,7 @@ const RoutineManager = ({ patients, onRoutineUpdate }) => {
           </div>
 
           <div className='mb-4'>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>
+            <label className='block text-sm font-medium mb-2'>
               Routine Type
             </label>
             <select
@@ -365,14 +545,17 @@ const RoutineManager = ({ patients, onRoutineUpdate }) => {
               </div>
 
               <div className='mt-6 flex gap-3'>
-                <Button onClick={saveRoutine}>Save Routine</Button>
+                <Button onClick={saveRoutine} disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save Routine'}
+                </Button>
                 <button
                   onClick={() => {
                     setRoutineItems([]);
                     setSelectedPatient('');
                     setRoutineName('');
                   }}
-                  className='px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50'
+                  disabled={isSaving}
+                  className='px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50'
                 >
                   Clear All
                 </button>

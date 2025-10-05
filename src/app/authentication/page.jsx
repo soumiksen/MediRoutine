@@ -7,7 +7,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Input from '../../components/Input.jsx';
-import Button from '../../components/largebutton.jsx';
+import Button from '../../components/button.jsx';
 
 const AuthPage = () => {
   const { user, isProvider, isPatient, loading } = useAuth();
@@ -21,7 +21,7 @@ const AuthPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'patient',
+    role: 'provider',
     caregiverEmail: '',
   });
   const [caregiverVerifying, setCaregiverVerifying] = useState(false);
@@ -306,35 +306,36 @@ const AuthPage = () => {
                 </select>
               </div>
             )}
-
-            {isSignUp && formData.role === 'patient' && (
-              <div className='mt-4'>
-                <Input
-                  label="Caregiver's Email"
-                  type='email'
-                  placeholder='caregiver@example.com'
-                  value={formData.caregiverEmail}
-                  onChange={handleInputChange('caregiverEmail')}
-                  required
-                />
-                {caregiverVerifying && (
-                  <p className='text-sm text-gray-500 mt-1'>
-                    <span className='inline-block animate-spin rounded-full h-3 w-3 border-b border-gray-500 mr-2'></span>
-                    Verifying caregiver...
-                  </p>
-                )}
-                {caregiverValid === true && (
-                  <p className='text-sm text-green-600 mt-1'>
-                    ✓ Caregiver found: {caregiverName}
-                  </p>
-                )}
-                {caregiverValid === false && (
-                  <p className='text-sm text-red-600 mt-1'>
-                    ✗ Caregiver not found. Please check the email address.
-                  </p>
-                )}
-              </div>
-            )}
+            {formData.role === 'patient' &&
+              isSignUp &&
+              formData.role === 'patient' && (
+                <div className='mt-4'>
+                  <Input
+                    label="Caregiver's Email"
+                    type='email'
+                    placeholder='caregiver@example.com'
+                    value={formData.caregiverEmail}
+                    onChange={handleInputChange('caregiverEmail')}
+                    required
+                  />
+                  {caregiverVerifying && (
+                    <p className='text-sm text-gray-500 mt-1'>
+                      <span className='inline-block animate-spin rounded-full h-3 w-3 border-b border-gray-500 mr-2'></span>
+                      Verifying caregiver...
+                    </p>
+                  )}
+                  {caregiverValid === true && (
+                    <p className='text-sm text-green-600 mt-1'>
+                      ✓ Caregiver found: {caregiverName}
+                    </p>
+                  )}
+                  {caregiverValid === false && (
+                    <p className='text-sm text-red-600 mt-1'>
+                      ✗ Caregiver not found. Please check the email address.
+                    </p>
+                  )}
+                </div>
+              )}
 
             <div className='mt-6'>
               <Button
