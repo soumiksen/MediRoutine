@@ -1,7 +1,25 @@
+'use client';
+import { useAuth } from '@/context/auth';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Button from './button';
 
 const Navbar = () => {
+  const { user, userData, isProvider, isPatient, loading } = useAuth();
+  const router = useRouter();
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push('/authentication');
+    } catch (e) {
+      console.error('Sign out failed', e);
+      // Force redirect on error
+      router.push('/authentication');
+    }
+  };
   return (
     <header className='bg-remedy-primary shadow-lg text-secondary'>
       <nav className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4'>
@@ -11,7 +29,29 @@ const Navbar = () => {
 
             <span className='text-3xl font-bold text-secondary'>RemedyRx</span>
           </div>
-          <Button>Sign In</Button>
+          {loading ? null : user ? (
+            <div className='flex items-center gap-3'>
+              <span className='text-sm'>
+                {userData?.name || user.email} —{' '}
+                {isProvider ? 'Provider' : isPatient ? 'Patient' : 'No role'}
+              </span>
+              {isProvider && (
+                <Link href='/providerdashboard'>
+                  <Button>Provider Dashboard</Button>
+                </Link>
+              )}
+              {isPatient && (
+                <Link href='/dashboard'>
+                  <Button>My Dashboard</Button>
+                </Link>
+              )}
+              <Button onClick={handleSignOut}>Sign Out</Button>
+            </div>
+          ) : (
+            <Link href='/authentication'>
+              <Button>Sign In</Button>
+            </Link>
+          )}
         </div>
       </nav>
     </header>

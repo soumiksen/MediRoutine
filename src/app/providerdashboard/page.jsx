@@ -1,7 +1,14 @@
 'use client';
 import { useState } from 'react';
+import { useAuth } from '@/context/auth';
+import { redirect } from 'next/navigation';
 
 const ProviderDashboard = () => {
+  const { user, isProvider, loading } = useAuth();
+  if (!loading && (!user || !isProvider)) {
+    if (!user) redirect('/authentication');
+    else redirect('/dashboard');
+  }
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showAddPrescription, setShowAddPrescription] = useState(false);
 
@@ -110,7 +117,7 @@ const ProviderDashboard = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 text-gray-900 dark:text-gray-100">
-            Hi Tanzid
+            Hi { (typeof window !== 'undefined' && window.localStorage.getItem('displayName')) || (user?.displayName) || (user?.email) || 'Provider' }
           </h1>
           
         </div>

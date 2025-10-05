@@ -1,27 +1,44 @@
 'use client';
 
+import { signIn, signUp } from '@/lib/authService.js';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Input from '../../components/Input.jsx';
 import Button from '../../components/largebutton.jsx';
 
 const AuthPage = () => {
+  const { user, isProvider, isPatient, loading } = require('@/context/auth').useAuth();
+  if (!loading && user) {
+    if (isProvider) return require('next/navigation').redirect('/providerdashboard');
+    if (isPatient) return require('next/navigation').redirect('/dashboard');
+  }
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'patient',
   });
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (isSignUp) {
-      console.log('Sign up submitted:', formData);
-    } else {
-      console.log('Sign in submitted:', {
-        email: formData.email,
-        password: formData.password,
-      });
+  const handleSubmit = async () => {
+    console.log(1);
+    try {
+      if (isSignUp) {
+        const result = await signUp(
+          formData.name,
+          formData.email,
+          formData.password,
+          formData.role
+        );
+        router.push('/dashboard');
+      } else {
+        const result = await signIn(formData.email, formData.password);
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Authentication error:', error.message);
     }
   };
 
@@ -134,15 +151,17 @@ const AuthPage = () => {
               />
             )}
 
-            {!isSignUp && (
-              <div className='flex justify-end mb-6'>
-                <a
-                  href='#'
-                  className='text-sm hover:underline'
-                  style={{ color: '#3AAFA9' }}
+            {isSignUp && (
+              <div className='mt-4'>
+                <label className='block text-sm mb-1'>Role</label>
+                <select
+                  className='w-full border rounded px-3 py-2'
+                  value={formData.role}
+                  onChange={handleInputChange('role')}
                 >
-                  Forgot password?
-                </a>
+                  <option value='patient'>Patient</option>
+                  <option value='provider'>Provider</option>
+                </select>
               </div>
             )}
 

@@ -3,8 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import Button from '../../components/button';
 import Input from '../../components/Input';
+import { useAuth } from '@/context/auth';
+import { redirect } from 'next/navigation';
 
 const ChatPage = () => {
+  const { user, loading } = useAuth();
+  if (!loading && !user) redirect('/authentication');
   const [messages, setMessages] = useState([
     {
       id: 1,

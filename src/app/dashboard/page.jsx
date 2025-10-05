@@ -1,8 +1,15 @@
 'use client';
 import Button from '@/components/button';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/context/auth';
+import { redirect } from 'next/navigation';
 
 const DashboardPage = () => {
+  const { user, isPatient, loading } = useAuth();
+  if (!loading && (!user || !isPatient)) {
+    if (!user) redirect('/authentication');
+    else redirect('/providerdashboard');
+  }
   const [greeting, setGreeting] = useState('');
   const [chatInput, setChatInput] = useState('');
 
@@ -62,7 +69,8 @@ const DashboardPage = () => {
       greetingText = 'Good evening';
     }
 
-    setGreeting(`${greetingText}, Tanzid`);
+    const name = (typeof window !== 'undefined' && window.localStorage.getItem('displayName')) || '';
+    setGreeting(`${greetingText}${name ? `, ${name}` : ''}`);
   }, []);
 
   const handleChatSubmit = (e) => {
