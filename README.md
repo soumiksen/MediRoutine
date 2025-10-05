@@ -39,8 +39,7 @@ Medical prescriptions and treatment plans are often complex and jargon-filled. R
 - Supports **multilingual translations** using Gemini’s natural language capabilities.
 
 ### 🗓️ 3. Routine Generator
-- Uses **Google Calendar API** to create daily schedules.  
-- Syncs automatically with user calendars for real-time access.
+- Uses **Calendar** to create daily schedules.  
 
 ### 🔔 4. Reminder & Action Breakdown
 - Sends push/email notifications via **Firebase**.  
@@ -56,11 +55,8 @@ Medical prescriptions and treatment plans are often complex and jargon-filled. R
 | Category | Technology |
 |-----------|-------------|
 | **Frontend** | Next.js + Framer Motion |
-| **Authentication** | Auth0 |
 | **Database & Notifications** | Firebase |
 | **AI Engine** | Gemini API |
-| **Scheduling** | Google Calendar API |
-| **Health Integration** | Google Fit API |
 | **Design** | Figma + Canva |
 
 ---
@@ -71,7 +67,7 @@ Medical prescriptions and treatment plans are often complex and jargon-filled. R
 - ➕ **New Routine** – Input or upload doctor’s instructions (OCR or text)  
 - 📋 **My Routines** – Saved and ongoing schedules  
 - 💊 **Medicine Details** – Pulls verified data from external medical APIs  
-- 🗓️ **Calendar View** – Integrated with Google Calendar  
+- 🗓️ **Calendar View** – Integrated with Calendar  
 - 👤 **Profile & ⚙️ Settings** – Account and preferences management  
 
 ---
@@ -91,12 +87,8 @@ Medical prescriptions and treatment plans are often complex and jargon-filled. R
 
 3. **Create `.env.local`**
    ```bash
-   AUTH0_CLIENT_ID=your_auth0_id
-   AUTH0_SECRET=your_auth0_secret
    FIREBASE_API_KEY=your_firebase_key
    GEMINI_API_KEY=your_gemini_key
-   GOOGLE_CALENDAR_CLIENT_ID=your_calendar_client
-   GOOGLE_FIT_CLIENT_ID=your_fit_client
    ```
 
 4. **Run the development server**
