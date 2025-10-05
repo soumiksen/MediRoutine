@@ -196,62 +196,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className='py-20'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <h2 className='text-4xl font-bold text-center mb-16'>
-            What Our Users Say
-          </h2>
-
-          <div className='grid md:grid-cols-3 gap-8'>
-            <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg border-t-4 border-remedy-aqua'>
-              <div className='text-remedy-aqua text-3xl mb-4'>★★★★★</div>
-              <p className='text-lg mb-4 italic'>
-                "I used to worry constantly about mixing up my medications. Now
-                I just look at my schedule each morning. It's given me such
-                peace of mind."
-              </p>
-              <p className='font-bold'>— Margaret, 72</p>
-            </div>
-
-            <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg border-t-4 border-remedy-success'>
-              <div className='text-remedy-success text-3xl mb-4'>★★★★★</div>
-              <p className='text-lg mb-4 italic'>
-                "My dad was always confused about when to take his pills.
-                RemedyRX has been a lifesaver for our whole family. So much
-                easier now!"
-              </p>
-              <p className='font-bold'>
-                — Jennifer, daughter & caregiver
-              </p>
-            </div>
-
-            <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg border-t-4 border-remedy-teal'>
-              <div className='text-remedy-teal text-3xl mb-4'>★★★★★</div>
-              <p className='text-lg mb-4 italic'>
-                "Finally, something that makes sense! The text is big enough for
-                me to read, and everything is so simple. I recommend it to all
-                my friends."
-              </p>
-              <p className='font-bold'>— Robert, 68</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Final CTA */}
       <section className='bg-remedy-teal py-20'>
         <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
           <h2 className='text-4xl md:text-5xl font-bold text-remedy-primary mb-6'>
             Start Simplifying Your Health Today
           </h2>
-          <p className='text-2xl text-remedy-primary mb-10'>
+          <p className='text-2xl text-remedy-primary mb-4'>
             Join thousands who've simplified their medication routine
           </p>
           <Button>
             Get Started Now - Free Forever!
           </Button>
-          <p className='text-remedy-primary text-lg'>
+          <p className='text-remedy-primary text-lg mt-4'>
             ✓ 100% Free ✓ No signup required ✓ Works instantly
           </p>
         </div>
