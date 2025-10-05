@@ -1,4 +1,4 @@
-import Button from '@/components/button';
+import Button from '@/components/largebutton';
 
 export default function Home() {
   return (

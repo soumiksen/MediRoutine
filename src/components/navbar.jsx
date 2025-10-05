@@ -1,4 +1,4 @@
-import Button from './largebutton';
+import Button from './button';
 
 const Navbar = () => {
   return (
@@ -11,7 +11,7 @@ const Navbar = () => {
             </div>
             <span className='text-3xl font-bold text-secondary'>RemedyRX</span>
           </div>
-          <Button>Get Started Free</Button>
+          <Button>Sign In</Button>
         </div>
       </nav>
     </header>
