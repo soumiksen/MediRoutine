@@ -34,7 +34,7 @@ export default function Home() {
           </div>
 
           <div className='grid md:grid-cols-3 gap-8'>
-            <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg border-2 border-remedy-alert'>
+            <div className='bg-remedy-gray text-remedy-secondary p-8 rounded-2xl shadow-lg'>
               <div className='text-5xl mb-4'>📋</div>
               <h3 className='text-2xl font-bold mb-3'>Too Many Instructions</h3>
               <p className='text-lg'>
@@ -43,7 +43,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg border-2 border-remedy-alert'>
+            <div className='bg-remedy-gray text-remedy-secondary  p-8 rounded-2xl shadow-lg '>
               <div className='text-5xl mb-4'>❓</div>
               <h3 className='text-2xl font-bold mb-3'>
                 Confusing Medical Terms
@@ -54,10 +54,10 @@ export default function Home() {
               </p>
             </div>
 
-            <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg border-2 border-remedy-alert'>
+            <div className='bg-remedy-gray text-remedy-secondary  p-8 rounded-2xl shadow-lg'>
               <div className='text-5xl mb-4'>⏰</div>
               <h3 className='text-2xl font-bold mb-3'>Easy to Forget</h3>
-              <p className='text-lg'>
+              <p className='text-lg'>``
                 Life gets busy. Without reminders, it's easy to miss doses or do
                 things in the wrong order.
               </p>
@@ -80,7 +80,7 @@ export default function Home() {
 
     <div className='grid md:grid-cols-2 gap-12'>
       {/* Option 1: Doctor Voice Input */}
-      <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg'>
+      <div className='bg-remedy-gray text-remedy-secondary p-8 rounded-2xl shadow-lg'>
         <h3 className='text-2xl font-bold text-center mb-8'>
           Option 1: Doctor Voice Input
         </h3>
@@ -119,7 +119,7 @@ export default function Home() {
       </div>
 
       {/* Option 2: OCR Photo */}
-      <div className='bg-remedy-secondary text-remedy-primary p-8 rounded-2xl shadow-lg'>
+      <div className='bg-remedy-gray text-remedy-secondary p-8 rounded-2xl shadow-lg'>
         <h3 className='text-2xl font-bold text-center mb-8'>
           Option 2: Photo Scan (OCR)
         </h3>
@@ -177,7 +177,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className='bg-remedy-secondary text-remedy-primary py-12'>
+      <footer className='bg-remedy-gray text-remedy-secondary  py-12'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='grid md:grid-cols-4 gap-8 mb-8'>
             <div>
