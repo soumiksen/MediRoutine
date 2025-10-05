@@ -11,9 +11,17 @@ const RoutineList = ({
   const [filterPatient, setFilterPatient] = useState('');
   const [filterType, setFilterType] = useState('');
 
-  const getPatientName = (patientId) => {
+  const getPatientName = (patientId, patientName) => {
+    // If routine already has patient name, use it
+    if (patientName) {
+      return patientName;
+    }
+
+    // Otherwise, look up from patients list
     const patient = patients.find(
-      (p) => p.id.toString() === patientId.toString()
+      (p) =>
+        (p.patientId && p.patientId.toString() === patientId.toString()) ||
+        (p.id && p.id.toString() === patientId.toString())
     );
     return patient ? patient.name : 'Unknown Patient';
   };
@@ -54,9 +62,9 @@ const RoutineList = ({
   };
 
   return (
-    <div className='bg-white rounded-lg shadow-md p-6'>
+    <div className='rounded-lg shadow-md p-6'>
       <div className='flex justify-between items-center mb-6'>
-        <h2 className='text-2xl font-bold text-gray-800'>Patient Routines</h2>
+        <h2 className='text-2xl font-bold'>Patient Routines</h2>
       </div>
 
       {/* Filters */}
@@ -108,16 +116,17 @@ const RoutineList = ({
           {filteredRoutines.map((routine) => (
             <div
               key={routine.id}
-              className='border rounded-lg p-4 hover:bg-gray-50'
+              className='rounded-lg p-4'
             >
               <div className='flex justify-between items-start mb-3'>
                 <div>
-                  <h3 className='text-lg font-semibold text-gray-800'>
+                  <h3 className='text-lg font-semibold'>
                     {routine.name}
                   </h3>
-                  <p className='text-sm text-gray-600'>
-                    Patient: {getPatientName(routine.patientId)} | Type:{' '}
-                    {routine.type} | Created:{' '}
+                  <p className='text-sm'>
+                    Patient:{' '}
+                    {getPatientName(routine.patientId, routine.patientName)} |
+                    Type: {routine.type} | Created:{' '}
                     {new Date(routine.createdAt).toLocaleDateString()}
                   </p>
                 </div>
@@ -162,25 +171,25 @@ const RoutineList = ({
 
               {/* Routine Items */}
               <div className='space-y-2'>
-                <h4 className='font-medium text-gray-700'>
+                <h4 className='font-medium'>
                   Routine Items ({routine.items.length})
                 </h4>
                 {routine.items.map((item) => (
-                  <div key={item.id} className='bg-gray-50 rounded p-3'>
+                  <div key={item.id} className='rounded p-3'>
                     <div className='flex justify-between items-start'>
                       <div className='flex-1'>
-                        <h5 className='font-medium text-gray-800'>
+                        <h5 className='font-medium'>
                           {item.name}
                         </h5>
                         {item.dosage && (
-                          <p className='text-sm text-gray-600'>
+                          <p className='text-sm'>
                             Dosage: {item.dosage}
                           </p>
                         )}
-                        <p className='text-sm text-gray-600'>
+                        <p className='text-sm'>
                           Frequency: {getFrequencyLabel(item.frequency)}
                         </p>
-                        <div className='text-sm text-gray-600'>
+                        <div className='text-sm'>
                           Times:{' '}
                           {item.timeSlots
                             .filter((time) => time)

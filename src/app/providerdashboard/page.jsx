@@ -33,7 +33,6 @@ const ProviderDashboard = () => {
   const [patients, setPatients] = useState([]);
   const [patientsLoading, setPatientsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newPatientNotifications, setNewPatientNotifications] = useState([]);
 
   // Firestore integration for real-time patient data
   useEffect(() => {
@@ -72,25 +71,9 @@ const ProviderDashboard = () => {
           return bTime.localeCompare(aTime);
         });
 
-        // Check for new patients (added in last 24 hours)
-        const twentyFourHoursAgo = new Date(
-          Date.now() - 24 * 60 * 60 * 1000
-        ).toISOString();
-        const newPatients = patientsData.filter((patient) => {
-          const patientTime = patient.addedAt || patient.createdAt;
-          return patientTime && patientTime > twentyFourHoursAgo;
-        });
-
-        console.log(
-          '✅ Processed patients:',
-          patientsData.length,
-          'total,',
-          newPatients.length,
-          'new'
-        );
+        console.log('✅ Processed patients:', patientsData.length, 'total');
 
         setPatients(patientsData);
-        setNewPatientNotifications(newPatients);
         setPatientsLoading(false);
         setError(null);
       },
@@ -156,50 +139,130 @@ const ProviderDashboard = () => {
     };
   }, [user]);
 
-  const [todaySchedule] = useState([
-    {
-      id: 1,
-      patient: 'Tanzid Rahman',
-      medication: 'Lisinopril 10mg',
-      time: '8:00 AM',
-      status: 'completed',
-    },
-    {
-      id: 2,
-      patient: 'Sarah Johnson',
-      medication: 'Aspirin 81mg',
-      time: '9:00 AM',
-      status: 'completed',
-    },
-    {
-      id: 3,
-      patient: 'Sarah Johnson',
-      medication: 'Amlodipine 5mg',
-      time: '9:00 AM',
-      status: 'completed',
-    },
-    {
-      id: 4,
-      patient: 'Michael Chen',
-      medication: 'Omeprazole 20mg',
-      time: '7:00 AM',
-      status: 'completed',
-    },
-    {
-      id: 5,
-      patient: 'Tanzid Rahman',
-      medication: 'Metformin 500mg',
-      time: '8:00 PM',
-      status: 'pending',
-    },
-    {
-      id: 6,
-      patient: 'Sarah Johnson',
-      medication: 'Atorvastatin 40mg',
-      time: '9:00 PM',
-      status: 'pending',
-    },
-  ]);
+  // Generate schedule for selected date whenever routines, patients, or selected date changes
+  useEffect(() => {
+    if (routines.length >= 0 && patients.length >= 0) {
+      generateScheduleForDate(selectedDate);
+    }
+  }, [routines, patients, selectedDate]);
+
+  const [todaySchedule, setTodaySchedule] = useState([]);
+  const [scheduleLoading, setScheduleLoading] = useState(true);
+
+  // Function to generate schedule for any selected date from routines
+  const generateScheduleForDate = (targetDate = selectedDate) => {
+    console.log('📅 Generating schedule for date:', targetDate.toDateString());
+    console.log('🔄 Available routines:', routines.length);
+    console.log('👥 Available patients:', patients.length);
+
+    const scheduleItems = [];
+
+    // Format target date for comparison (YYYY-MM-DD)
+    const targetDateString = targetDate.toISOString().split('T')[0];
+
+    // Process each active routine
+    routines.forEach((routine) => {
+      if (!routine.active) return;
+
+      console.log(
+        '🔍 Processing routine:',
+        routine.name,
+        'for patient:',
+        routine.patientName
+      );
+
+      // Process each item in the routine
+      routine.items?.forEach((item) => {
+        if (!item.timeSlots || item.timeSlots.length === 0) return;
+
+        // Generate schedule items for each time slot
+        item.timeSlots.forEach((time, index) => {
+          if (!time) return;
+
+          const scheduleItem = {
+            id: `${routine.id}_${item.id}_${index}`,
+            patient: routine.patientName || 'Unknown Patient',
+            patientId: routine.patientId,
+            medication:
+              item.type === 'medication'
+                ? `${item.name} ${item.dosage || ''}`.trim()
+                : item.name,
+            activity: item.type !== 'medication' ? item.name : null,
+            type: item.type,
+            time: formatTime12Hour(time),
+            timeValue: time, // Keep 24-hour format for sorting
+            instructions: item.instructions,
+            frequency: item.frequency,
+            routineId: routine.id,
+            routineName: routine.name,
+            status: 'pending', // Default status, could be enhanced with completion tracking
+            withFood: item.withFood,
+            beforeFood: item.beforeFood,
+            afterFood: item.afterFood,
+          };
+
+          scheduleItems.push(scheduleItem);
+        });
+      });
+    });
+
+    // Sort by time
+    scheduleItems.sort((a, b) => {
+      return a.timeValue.localeCompare(b.timeValue);
+    });
+
+    console.log('✅ Generated schedule items:', scheduleItems.length);
+    console.log('📋 Schedule items:', scheduleItems);
+
+    setTodaySchedule(scheduleItems);
+    setScheduleLoading(false);
+  };
+
+  // Helper function to format time to 12-hour format
+  const formatTime12Hour = (time24) => {
+    if (!time24) return '';
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+
+  // Function to mark schedule item as completed
+  const markScheduleItemCompleted = (itemId) => {
+    console.log('✅ Marking schedule item as completed:', itemId);
+
+    setTodaySchedule((prevSchedule) =>
+      prevSchedule.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              status: 'completed',
+              completedAt: new Date().toISOString(),
+            }
+          : item
+      )
+    );
+
+    // Here you could also save the completion to Firestore for persistence
+    // For now, we'll just update local state
+  };
+
+  // Function to get activity icon based on type
+  const getActivityIcon = (type) => {
+    switch (type) {
+      case 'medication':
+        return '💊';
+      case 'meal':
+        return '🍽️';
+      case 'exercise':
+        return '🏃';
+      case 'general':
+        return '📝';
+      default:
+        return '📋';
+    }
+  };
 
   const [newPrescription, setNewPrescription] = useState({
     patientId: '',
@@ -250,6 +313,36 @@ const ProviderDashboard = () => {
       day === today.getDate() &&
       selectedDate.getMonth() === today.getMonth() &&
       selectedDate.getFullYear() === today.getFullYear()
+    );
+  };
+
+  const isSelectedDate = (day) => {
+    if (!day) return false;
+    return (
+      day === selectedDate.getDate() &&
+      selectedDate.getMonth() === selectedDate.getMonth() &&
+      selectedDate.getFullYear() === selectedDate.getFullYear()
+    );
+  };
+
+  const handleDateClick = (day) => {
+    if (!day) return;
+    const newDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      day
+    );
+    setSelectedDate(newDate);
+    console.log('📅 Date selected:', newDate.toDateString());
+  };
+
+  const hasActivitiesOnDate = (day) => {
+    if (!day || routines.length === 0) return false;
+
+    // Check if any routine has activities (simple check for demo)
+    // In a real implementation, you might want to check actual scheduled items
+    return routines.some(
+      (routine) => routine.active && routine.items?.length > 0
     );
   };
 
@@ -443,56 +536,6 @@ const ProviderDashboard = () => {
           </div>
         </div>
 
-        {/* New Patient Notifications */}
-        {newPatientNotifications.length > 0 && (
-          <div className='mb-6 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-2xl p-6 border-l-4 border-green-500'>
-            <div className='flex items-center gap-3 mb-4'>
-              <div className='p-2 bg-green-100 dark:bg-green-900/50 rounded-lg'>
-                <span className='text-2xl'>🎉</span>
-              </div>
-              <h2 className='text-xl font-bold text-gray-800 dark:text-gray-200'>
-                New Patient Registrations
-              </h2>
-            </div>
-            <div className='space-y-3'>
-              {newPatientNotifications.map((patient) => (
-                <div
-                  key={patient.id}
-                  className='flex items-center justify-between bg-white dark:bg-zinc-800 rounded-lg p-4 shadow-sm'
-                >
-                  <div>
-                    <p className='font-medium text-gray-900 dark:text-gray-100'>
-                      {patient.name}
-                    </p>
-                    <p className='text-sm text-gray-600 dark:text-gray-400'>
-                      {patient.email}
-                    </p>
-                    <p className='text-xs text-gray-500 dark:text-gray-500'>
-                      Registered:{' '}
-                      {new Date(patient.addedAt).toLocaleDateString()} at{' '}
-                      {new Date(patient.addedAt).toLocaleTimeString()}
-                    </p>
-                  </div>
-                  <div className='flex gap-2'>
-                    <button
-                      onClick={() => setSelectedPatientProfile(patient)}
-                      className='px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded text-sm hover:bg-blue-200 dark:hover:bg-blue-900/70 transition'
-                    >
-                      View Profile
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('manage')}
-                      className='px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded text-sm hover:bg-green-200 dark:hover:bg-green-900/70 transition'
-                    >
-                      Create Routine
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Tab Content */}
         {activeTab === 'overview' && (
           <div>
@@ -512,14 +555,20 @@ const ProviderDashboard = () => {
                 </div>
 
                 <div className='flex items-center justify-between mb-4'>
-                  <button className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 transition'>
+                  <button
+                    onClick={() => changeMonth(-1)}
+                    className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 transition'
+                  >
                     ←
                   </button>
                   <h3 className='text-lg font-semibold text-gray-900 dark:text-gray-100'>
                     {monthNames[selectedDate.getMonth()]}{' '}
                     {selectedDate.getFullYear()}
                   </h3>
-                  <button className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 transition'>
+                  <button
+                    onClick={() => changeMonth(1)}
+                    className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 transition'
+                  >
                     →
                   </button>
                 </div>
@@ -539,15 +588,28 @@ const ProviderDashboard = () => {
                   {getDaysInMonth(selectedDate).map((day, i) => (
                     <div
                       key={i}
-                      className={`aspect-square flex items-center justify-center text-sm rounded-lg cursor-pointer 
+                      onClick={() => handleDateClick(day)}
+                      className={`aspect-square flex flex-col items-center justify-center text-sm rounded-lg cursor-pointer relative transition-all
                     ${!day ? 'invisible' : ''}
                     ${
                       isToday(day)
-                        ? 'bg-[#3AAFA9] text-white font-bold'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-[#3AAFA9] text-white font-bold shadow-lg'
+                        : isSelectedDate(day)
+                        ? 'bg-[#2B7A78] text-white font-semibold shadow-md'
+                        : 'text-gray-700 dark:text-gray-300'
+                    }
+                    ${
+                      hasActivitiesOnDate(day) &&
+                      !isToday(day) &&
+                      !isSelectedDate(day)
+                        ? 'border-2 border-remedy-teal'
+                        : ''
                     }`}
                     >
-                      {day}
+                      <span>{day}</span>
+                      {hasActivitiesOnDate(day) && (
+                        <div className='absolute bottom-1 w-1 h-1 bg-current rounded-full opacity-70'></div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -590,23 +652,50 @@ const ProviderDashboard = () => {
 
               {/* Today's Schedule */}
               <div className='bg-white dark:bg-zinc-800 rounded-2xl shadow-lg p-6 transition-colors'>
-                <h2 className='text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100'>
-                  Today's Schedule
-                </h2>
-                <p className='text-sm mb-4 text-gray-600 dark:text-gray-400'>
-                  {new Date().toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </p>
+                <div className='flex justify-between items-center mb-4'>
+                  <div>
+                    <h2 className='text-2xl font-bold text-gray-900 dark:text-gray-100'>
+                      {isToday(selectedDate.getDate())
+                        ? "Today's Schedule"
+                        : 'Schedule'}
+                    </h2>
+                    <p className='text-sm text-gray-600 dark:text-gray-400'>
+                      {selectedDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year:
+                          selectedDate.getFullYear() !==
+                          new Date().getFullYear()
+                            ? 'numeric'
+                            : undefined,
+                      })}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => generateScheduleForDate(selectedDate)}
+                    disabled={scheduleLoading}
+                    className='px-3 py-1 bg-[#3AAFA9] hover:bg-[#2B7A78] text-white rounded-lg text-sm transition disabled:opacity-50'
+                  >
+                    {scheduleLoading ? '🔄' : '🔄 Refresh'}
+                  </button>
+                </div>
 
                 <div className='space-y-3 max-h-[600px] overflow-y-auto'>
-                  {todaySchedule.filter((i) => i.status === 'pending')
-                    .length === 0 ? (
+                  {scheduleLoading ? (
+                    <div className='text-center py-8 text-gray-500'>
+                      <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-[#3AAFA9] mx-auto mb-2'></div>
+                      <p className='text-sm'>Generating today's schedule...</p>
+                    </div>
+                  ) : todaySchedule.filter((i) => i.status === 'pending')
+                      .length === 0 ? (
                     <div className='text-center py-8 text-[#3AAFA9]'>
                       <p className='text-lg mb-2'>🎉 All done for today!</p>
-                      <p className='text-sm'>No pending medications</p>
+                      <p className='text-sm'>
+                        {todaySchedule.length === 0
+                          ? 'No activities scheduled for today'
+                          : 'No pending activities'}
+                      </p>
                     </div>
                   ) : (
                     todaySchedule
@@ -626,16 +715,32 @@ const ProviderDashboard = () => {
                                   ⏰
                                 </span>
                               </div>
-                              <h4 className='font-semibold text-gray-900 dark:text-gray-100'>
-                                {item.patient}
-                              </h4>
+                              <div className='flex items-center gap-2'>
+                                <span className='text-lg'>
+                                  {getActivityIcon(item.type)}
+                                </span>
+                                <h4 className='font-semibold text-gray-900 dark:text-gray-100'>
+                                  {item.patient}
+                                </h4>
+                              </div>
                               <p className='text-sm text-gray-600 dark:text-gray-300'>
-                                {item.medication}
+                                {item.medication || item.activity}
                               </p>
+                              {item.instructions && (
+                                <p className='text-xs text-gray-500 dark:text-gray-400 mt-1'>
+                                  {item.instructions}
+                                </p>
+                              )}
+                              {(item.withFood ||
+                                item.beforeFood ||
+                                item.afterFood) && (
+                                <div className='text-xs text-blue-600 dark:text-blue-400 mt-1'>
+                                  {item.withFood && '🍽️ With food '}
+                                  {item.beforeFood && '⏰ Before food '}
+                                  {item.afterFood && '🕐 After food '}
+                                </div>
+                              )}
                             </div>
-                            <button className='bg-[#3AAFA9] hover:bg-[#2B7A78] text-white px-3 py-1 rounded-lg text-xs transition'>
-                              Mark Done
-                            </button>
                           </div>
                         </div>
                       ))
