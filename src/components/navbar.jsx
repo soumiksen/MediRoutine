@@ -28,7 +28,11 @@ const Navbar = () => {
           <div className='flex items-center gap-3'>
             <Image src='/logo.png' width={50} height={50} alt='RemedyRx' />
 
-            <span className='text-3xl font-bold text-secondary'>RemedyRx</span>
+            <Link href='/'>
+              <span className='text-3xl font-bold text-secondary'>
+                RemedyRx
+              </span>
+            </Link>
           </div>
           {loading ? null : user ? (
             <div className='flex items-center gap-3'>

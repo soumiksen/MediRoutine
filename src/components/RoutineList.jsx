@@ -12,16 +12,12 @@ const RoutineList = ({
   const [filterType, setFilterType] = useState('');
 
   const getPatientName = (patientId, patientName) => {
-    // If routine already has patient name, use it
-    if (patientName) {
-      return patientName;
-    }
+    if (patientName) return patientName;
 
-    // Otherwise, look up from patients list
     const patient = patients.find(
       (p) =>
-        (p.patientId && p.patientId.toString() === patientId.toString()) ||
-        (p.id && p.id.toString() === patientId.toString())
+        (p?.patientId && p?.patientId.toString() === patientId?.toString()) ||
+        (p?.id && p?.id.toString() === patientId?.toString())
     );
     return patient ? patient.name : 'Unknown Patient';
   };
@@ -113,114 +109,73 @@ const RoutineList = ({
         </div>
       ) : (
         <div className='space-y-4'>
-          {filteredRoutines.map((routine) => (
-            <div
-              key={routine.id}
-              className='rounded-lg p-4'
-            >
-              <div className='flex justify-between items-start mb-3'>
-                <div>
-                  <h3 className='text-lg font-semibold'>
-                    {routine.name}
-                  </h3>
-                  <p className='text-sm'>
-                    Patient:{' '}
-                    {getPatientName(routine.patientId, routine.patientName)} |
-                    Type: {routine.type} | Created:{' '}
-                    {new Date(routine.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
+          {filteredRoutines.map((routine) => {
+            const item = routine.item; // Single routine item
 
-                <div className='flex items-center gap-2'>
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      routine.active
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {routine.active ? 'Active' : 'Inactive'}
-                  </span>
-
-                  <button
-                    onClick={() => onToggleActive(routine.id)}
-                    className={`px-3 py-1 text-sm rounded ${
-                      routine.active
-                        ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                        : 'bg-green-100 text-green-700 hover:bg-green-200'
-                    }`}
-                  >
-                    {routine.active ? 'Deactivate' : 'Activate'}
-                  </button>
-
-                  <button
-                    onClick={() => onEditRoutine(routine)}
-                    className='px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200'
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => onDeleteRoutine(routine.id)}
-                    className='px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200'
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-
-              {/* Routine Items */}
-              <div className='space-y-2'>
-                <h4 className='font-medium'>
-                  Routine Items ({routine.items.length})
-                </h4>
-                {routine.items.map((item) => (
-                  <div key={item.id} className='rounded p-3'>
-                    <div className='flex justify-between items-start'>
-                      <div className='flex-1'>
-                        <h5 className='font-medium'>
-                          {item.name}
-                        </h5>
-                        {item.dosage && (
-                          <p className='text-sm'>
-                            Dosage: {item.dosage}
-                          </p>
-                        )}
-                        <p className='text-sm'>
-                          Frequency: {getFrequencyLabel(item.frequency)}
-                        </p>
-                        <div className='text-sm'>
-                          Times:{' '}
-                          {item.timeSlots
-                            .filter((time) => time)
-                            .map((time) => formatTime(time))
-                            .join(', ')}
-                        </div>
-
-                        {(item.withFood ||
-                          item.beforeFood ||
-                          item.afterFood) && (
-                          <p className='text-sm text-blue-600 mt-1'>
-                            {item.withFood
-                              ? '🍽️ With food'
-                              : item.beforeFood
-                              ? '⏰ Before food'
-                              : '🍽️ After food'}
-                          </p>
-                        )}
-
-                        {item.instructions && (
-                          <p className='text-sm text-gray-600 mt-1 italic'>
-                            "{item.instructions}"
-                          </p>
-                        )}
-                      </div>
-                    </div>
+            return (
+              <div key={routine.id} className='rounded-lg p-4 border border-gray-200'>
+                <div className='flex justify-between items-start mb-3'>
+                  <div>
+                    <h3 className='text-lg font-semibold'>{routine.name}</h3>
+                    <p className='text-sm'>
+                      Patient: {getPatientName(routine.patientId, routine.patientName)} | Type: {routine.type} | Created:{' '}
+                      {new Date(routine.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
-                ))}
+
+                  <div className='flex items-center gap-2'>
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        routine.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {routine.active ? 'Active' : 'Inactive'}
+                    </span>
+
+                    <button
+                      onClick={() => onToggleActive(routine.id)}
+                      className={`px-3 py-1 text-sm rounded ${
+                        routine.active ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'
+                      }`}
+                    >
+                      {routine.active ? 'Deactivate' : 'Activate'}
+                    </button>
+
+                    <button
+                      onClick={() => onEditRoutine(routine)}
+                      className='px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200'
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => onDeleteRoutine(routine.id)}
+                      className='px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200'
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                {item && (
+                  <div className='bg-gray-50 p-3 rounded'>
+                    <h4 className='font-medium'>{item.name}</h4>
+                    {item.dosage && <p className='text-sm'>Dosage: {item.dosage}</p>}
+                    <p className='text-sm'>Frequency: {getFrequencyLabel(item.frequency)}</p>
+                    <div className='text-sm'>
+                      Times: {item.timeSlots?.filter(Boolean).map(formatTime).join(', ')}
+                    </div>
+                    {(item.withFood || item.beforeFood || item.afterFood) && (
+                      <p className='text-sm text-blue-600 mt-1'>
+                        {item.withFood ? '🍽️ With food' : item.beforeFood ? '⏰ Before food' : '🍽️ After food'}
+                      </p>
+                    )}
+                    {item.instructions && <p className='text-sm text-gray-600 mt-1 italic'>"{item.instructions}"</p>}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -44,7 +44,7 @@ export default function Home() {
             Your doctor's instructions, transformed into a simple daily schedule
             you can actually follow.
           </p>
-          <Button>Try RemedyRX Now!</Button>
+          <Button onClick={() => router.push('/authentication')}>Try RemedyRX Now!</Button>
           <p className='mt-4 text-lg'></p>
         </div>
       </section>
